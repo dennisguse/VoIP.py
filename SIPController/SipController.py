@@ -1,15 +1,13 @@
-import pjsua as pj
 import logging
+
+import pjsua as pj
+from ConfigModules import AccountConfigModule, AudioDeviceModule, DumpSettingsModule, MediaConfigModule, NetworkSettingsModule
 import SIPController.AccountCallBack as accountCallB
 import SIPController.CallCallBack as CallCallBack
 import SIPController.PresenceCallBack as PresenceCallBack
 import SIPController.CodecList as CodecList
 import SIPController.ControllerCallBacksHolder as ControllerCallBacksHolder
-from Modules.ConfigModules.MediaConfigModule import MediaConfigModule
-from Modules.ConfigModules.NetworkSettingsModule import NetworkSettingsModule
-from Modules.ConfigModules.AccountConfigModule import AccountConfigModule
-from Modules.ConfigModules.DumpSettingsModule import DumpSettingsModule
-from Modules.ConfigModules.AudioDeviceModule import AudioDeviceModule
+
 
 class SipController(object):
     """
@@ -54,11 +52,11 @@ class SipController(object):
         return
 
     def initFromConfiguration(self):
-        self.mediaConf = MediaConfigModule().getMediaConfig()
-        self.networkSettings = NetworkSettingsModule().getNetworkSettings()
-        self.accountInfo = AccountConfigModule().getAccountSettings()
-        self.dumpSettings = DumpSettingsModule().getDumpSettings()
-        self.audioDevice = AudioDeviceModule().getAudioDeviceSettings()
+        self.mediaConf = MediaConfigModule.MediaConfigModule().getMediaConfig()
+        self.networkSettings = NetworkSettingsModule.NetworkSettingsModule().getNetworkSettings()
+        self.accountInfo = AccountConfigModule.AccountConfigModule().getAccountSettings()
+        self.dumpSettings = DumpSettingsModule.DumpSettingsModule().getDumpSettings()
+        self.audioDevice = AudioDeviceModule.AudioDeviceModule().getAudioDeviceSettings()
 
     def log_cb(self,level,str,len):
         """

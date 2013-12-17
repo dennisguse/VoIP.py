@@ -3,7 +3,6 @@ from PyQt4.QtCore import QObject
 from PyQt4.QtCore import SIGNAL
 from SIPController.SipController import SipController
 from Defines import SIGNALS
-from Modules.ConfigModules.ConfigReaderModule import *
 from SIPController.ControllerCallBacksHolder import ControllerCallBacksHolder
 
 def singleton(cls):

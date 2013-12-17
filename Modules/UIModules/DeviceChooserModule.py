@@ -1,7 +1,7 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from PyQt4 import uic
-from Modules.ConfigModules.AudioDeviceModule import AudioDeviceModule
+from ConfigModules import AudioDeviceModule
 import Modules.UIModules.RESOURCES as UIResources
 import pjsua
 
@@ -15,7 +15,7 @@ class DeviceChooserModule(QDialog):
         return False
 
     def start(self):
-        currentSettings = AudioDeviceModule().getAudioDeviceSettings()
+        currentSettings = AudioDeviceModule.AudioDeviceModule().getAudioDeviceSettings()
         if currentSettings.playbackDevId == None or currentSettings.captureDevId == None:
             self.initDialog()
             self.dia.show()
