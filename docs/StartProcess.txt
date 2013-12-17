@@ -1,0 +1,45 @@
+Start process of VoIPPy (graphical stupid mode)
+
+	1. [VoIPPy.py]		- main entry point
+				- starts module handler
+
+	2. [ModuleHandler.py]   - checks sys args for start options (cli or gui)
+				- get instance of the SignalHandler and provides the references to load, activate and dismiss 
+				  modules methods
+
+	3. [SignalHandler.py] 	- reads the account configuration with the help of the ConfigReaderModule
+				- starts the SipHandler and provides the references to the on call state changes and on registration
+				  state changed methods
+
+	4. [SipHandler.py]	- inits the PJSUA lib
+				- registers the client
+
+	5. [ModuleHandler.py]	- create object of UILoader and pass reference to signal handler to it
+
+	6. [UILoaderModule.py]	- loads the requested UI element with the reference of the signal handler (so that the UI element knows 
+				  the object which can send signals to it)
+	
+	7. [StupidUIModule.py]	- connects on call and on registration state signals form the given signal source
+				  and binds it handler functions to the signals
+				- activates the 'ErrorDialog',  'WaveRecordModule',  'RingToneModule' and 'SingleBuddyModule'   
+				  by emiting an signal    
+
+	8. [SignalHandler.py]	- receives signal to load new modules (signals have the module name attached)
+
+	9. [ModuleHandler.py]	- loads an module with the help of reflection 
+				- registers new signal if the modules has one to register (see AbstractMoudle.py for structure of an 
+				  module
+
+	10. [StupidUIModule.py] - activate the modules which are active all the time (WaveRecordModules, SingleBuddyModule)
+				- reads the predefind callee number from the config
+
+	11. [ModuleHandler.py]	- starts the UI mode
+
+ 
+	12. [UILoaderModule.py]	- enters the GUI app loop
+
+
+
+      
+
+
