@@ -1,5 +1,11 @@
-#TODO Copyright (C) 
-#TODO Lisence
+Copyright (C)
+    Frank Haase (fra.haase@gmail.com)
+    Dennis Guse (dennis.guse@alumni.tu-berlin.de)
+The program is licensed under GPLv3 and comes WITHOUT ANY WARRANTY.
+
+
+VoIP.py is a small framework to create highly configurable UIs for VoIP-telephony.
+PJSIP (http://www.pjsip.org) is used as library for the SIP implementation and accessed via the available python-bindings of PJSIP.
 
 Quick Info:
 	_____________________________________________________
