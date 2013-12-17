@@ -6,7 +6,7 @@ class DumpSettingsModule(object):
     dumpWave = None
     dumpCallStats = None
     dumpLastActiveSettings = None
-    pjLogLevel = 0
+    pjLogLevel = 5
     """
     END OF CONFIGURATION
     """

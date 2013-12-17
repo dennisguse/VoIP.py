@@ -216,7 +216,6 @@ class SipController(object):
         self.currentCall.set_callback(self.currentCallCallback)
         self.controllerCallBack.connectIncomingCall()
 
-
     def callClear(self):
         self.currentCall = None
         self.currentCallCallback = None

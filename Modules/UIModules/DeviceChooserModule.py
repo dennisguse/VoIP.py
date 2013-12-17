@@ -10,6 +10,7 @@ class DeviceChooserModule(QDialog):
 
     def __init__(self):
         super(DeviceChooserModule, self).__init__(None)
+        self.sndDevices = None
         return
 
     def hasSignalsToRegister(self):
@@ -29,20 +30,31 @@ class DeviceChooserModule(QDialog):
         self.dia = uic.loadUi(UIResources.RESCOURCES_UI["DeviceChooserDialog"], self)
         self.dia.btn.clicked.connect(self.save)
         self.lib = pjsua.Lib.instance()
-        sndDevices = self.lib.enum_snd_dev()
-        for device in sndDevices:
-            if "(hw:" not in device.name: #Valid deviceId available?
-                 continue
+        self.sndDevices = self.lib.enum_snd_dev()
+        for device in self.sndDevices:
+            print("New device:")
+            print(device.name)
+            print("Input: " + str(device.input_channels))
+            print("Output: " + str(device.output_channels))
+            print("ID: " + str(device.device_id))
+            #if "(hw:" not in device.name: #Valid deviceId available?
+            #     continue
             if device.input_channels > 0:
                  self.dia.cmbDeviceInput.addItem(device.name)
             if device.output_channels > 0:
                  self.dia.cmbDeviceOutput.addItem(device.name)
 
     def save(self):
-        self.lib.set_snd_dev(self.getId(self.dia.cmbDeviceInput.currentText(), 0),\
-                                           self.getId(self.dia.cmbDeviceOutput.currentText(), 1))
+        inputId = 0
+        outputId = 0
+        for device in self.sndDevices:
+            if self.dia.cmbDeviceInput.currentText() == device.name:
+                inputId = device.device_id
+            if self.dia.cmbDeviceOutput.currentText() == device.name:
+                outputId = device.device_id
+        self.lib.set_snd_dev(inputId, outputId)
         self.dia.close()
-        self.showWaring()
+        #self.showWaring()
 
     def getId(self, text, position):
         if position == 0:
