@@ -31,4 +31,4 @@ class DumpSettings(object):
         self.dumpWave = False
         self.dumpCallStats = False
         self.dumpLastActiveSettings = False
-        self.pjLogLevel = 2
+        self.pjLogLevel = 5

@@ -32,6 +32,7 @@ class SimpleUI(AbstractUIModule,  QtGui.QWidget):
             SIGNALS.emit(self, SIGNALS.MODULE_LOAD, module, MODULES[module])
         self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE),  'WaveRecordModule')
         self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE),  'DeviceChooserModule')
+        self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE),  'SingleBuddyModule')
 
 
     def connectButtons(self):
