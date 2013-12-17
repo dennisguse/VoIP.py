@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>Sound device configuration</string>
   </property>
   <widget class="QLabel" name="labelDev1">
    <property name="geometry">
@@ -23,7 +23,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>TextLabel</string>
+    <string>Input</string>
    </property>
   </widget>
   <widget class="QLabel" name="labelDev2">
@@ -36,7 +36,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>TextLabel</string>
+    <string>Output</string>
    </property>
   </widget>
   <widget class="QPushButton" name="btn">
@@ -52,7 +52,7 @@
     <string>Ok</string>
    </property>
   </widget>
-  <widget class="QComboBox" name="cmbDev1">
+  <widget class="QComboBox" name="cmbDeviceInput">
    <property name="geometry">
     <rect>
      <x>90</x>
@@ -62,7 +62,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QComboBox" name="cmbDev2">
+  <widget class="QComboBox" name="cmbDeviceOutput">
    <property name="geometry">
     <rect>
      <x>90</x>
