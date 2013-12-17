@@ -1,5 +1,6 @@
 from Modules.ConfigModules import ConfigReaderModule
 
+
 class VideoSettings(object):
     def __init__(self):
         self.captureDevice = -1

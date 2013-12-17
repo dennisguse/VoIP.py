@@ -3,7 +3,7 @@ class AccountConfigModule(object):
     """
     CONFIGURE HERE!
     """
-    sipServerAddress = "127.0.0.1"  #String
+    sipServerAddress = "sque.de"  #String
     sipServerPort = 5060 #int
     sipName = "00" #string
     sipSecret = "00" #string
