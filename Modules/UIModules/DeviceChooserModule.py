@@ -32,13 +32,7 @@ class DeviceChooserModule(QDialog):
         self.lib = pjsua.Lib.instance()
         self.sndDevices = self.lib.enum_snd_dev()
         for device in self.sndDevices:
-            print("New device:")
-            print(device.name)
-            print("Input: " + str(device.input_channels))
-            print("Output: " + str(device.output_channels))
-            print("ID: " + str(device.device_id))
-            #if "(hw:" not in device.name: #Valid deviceId available?
-            #     continue
+            print(device.name, " (Input-ID:", str(device.input_channels), " // Output-ID ", str(device.output_channels), ") Device-ID: ", str(device.device_id))
             if device.input_channels > 0:
                  self.dia.cmbDeviceInput.addItem(device.name)
             if device.output_channels > 0:

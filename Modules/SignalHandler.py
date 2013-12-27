@@ -110,7 +110,6 @@ class SignalHandler(QObject):
 
     def onCallEstablished(self):
         self.emit(SIGNAL(SIGNALS.CALL_ESTABLISHED))
-        print("Vid cnt check = " + str(self.sipHandler.currentCall.info().vid_cnt))
         if self.sipHandler.currentCall.info().vid_cnt != 0:
             print("SIGNAL HANDLER CALL EST")
             self.emit(SIGNAL(SIGNALS.CALL_SHOW_VIDEO), self.sipHandler.getCurrentCallVideoStream())
