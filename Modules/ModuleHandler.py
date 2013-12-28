@@ -1,5 +1,4 @@
 import imp, logging, sys, time
-import Defines.MODES as MODES
 from PyQt4.QtGui import *
 from Modules.MainUIModules.UILoaderModule import UILoader
 from Modules.MainCliModules.MainCliModule import MainCli

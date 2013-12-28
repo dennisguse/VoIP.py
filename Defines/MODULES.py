@@ -14,6 +14,6 @@ class MODULES(object):
     SingleBuddyModule = './Modules/PresenceModules/SingleBuddyModule.py', \
     VideoPreviewModule = './Modules/UIModules/VideoPreviewModule.py', \
     DeviceChooserModule = './Modules/UIModules/DeviceChooserModule.py', \
+    DeviceChooserModuleSimple = './Modules/UIModules/DeviceChooserModuleSimple.py', \
     VideoCallModule = './Modules/UIModules/VideoCallModule.py'
     )
-    

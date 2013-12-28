@@ -15,6 +15,7 @@ class RESCOURCES_UI(object):
     MediaSettingsWidget = mainPath + "MediaSettingsWidget.ui", \
     RegisterDialog = mainPath + "RegisterDialog.ui", \
     DeviceChooserDialog = mainPath + "DeviceChooserDialog.ui", \
+    DeviceChooserDialogSimple = mainPath + "DeviceChooserDialogSimple.ui", \
     StatisticDialog = mainPath + "StatisticsDialog.ui"
     )
 

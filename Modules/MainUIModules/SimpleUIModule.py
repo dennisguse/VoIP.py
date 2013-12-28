@@ -17,7 +17,7 @@ import Modules.MainUIModules.RESOURCES as MainUIResources
 class SimpleUI(AbstractUIModule,  QtGui.QWidget):
     
     MODULES_TO_LOAD = ['ErrorDialog',  'WaveRecordModule',  'RingToneModule', 'SingleBuddyModule',
-                       'DeviceChooserModule']
+                       'DeviceChooserModuleSimple']
     
     def __init__(self, signalSource, parent=None):
         QtGui.QWidget.__init__(self, parent)   
@@ -31,7 +31,7 @@ class SimpleUI(AbstractUIModule,  QtGui.QWidget):
         for module in self.MODULES_TO_LOAD:
             SIGNALS.emit(self, SIGNALS.MODULE_LOAD, module, MODULES[module])
         self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE),  'WaveRecordModule')
-        self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE),  'DeviceChooserModule')
+        self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE),  'DeviceChooserModuleSimple')
         self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE),  'SingleBuddyModule')
 
 
