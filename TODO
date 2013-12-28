@@ -1,16 +1,9 @@
 Config
-* Parsing NetworkSettings is not working
 * Remove FirstBuddy* and replace with useful impl.
-* Check media configuration
-* Make config file a parameter (could be even the already read file); Are there useful XML wrapper for Python?
 
 SIP 
 * Check SIP return codes (especially if registration fails and call fails) and state the reason (at least in the console)
-* Early-media is not yet working (no sound provided)
 * Enable MediaConf
 
 Logging
 * Not yet there.... at least not yet useful
-
-ENUMS
-* If existing, then use else create!
