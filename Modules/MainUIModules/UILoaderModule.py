@@ -1,4 +1,3 @@
-import Defines.MODES as MODES
 from Modules.MainUIModules.SimpleUIModule import SimpleUI
 from Modules.MainUIModules.StandardUIModule import StandardUI
 from Modules.MainUIModules.SimpleVideoUIModule import SimpleVideoUI
