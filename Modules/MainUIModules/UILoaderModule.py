@@ -14,14 +14,14 @@ class UILoader(object):
         #    self.ui = modeOptions[uiMode](signalSource)
         #except:
         #    self.ui = modeOptions[MODES.STUPID](signalSource)
-        if uiMode == MODES.SIMPLEVIDEO:
+
+        #TODO Remove string comparison and use check for available classes.
+        if uiMode == "simpleVideo":
             self.ui = SimpleVideoUI(signalSource)
-        elif uiMode == MODES.SIMPLE:
+        elif uiMode == "simple":
             self.ui = SimpleUI(signalSource)
 
-        
-    def start(self):       
+    def start(self):
         self.app.setActiveWindow(self.ui)
         self.ui.showWindow()
         self.app.exec_()
-        

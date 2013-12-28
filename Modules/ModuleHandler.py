@@ -15,7 +15,7 @@ class ModuleHandler(object):
         self.objects = {} #The instances of the classes/modules.
         self.mode = mode
 
-        if mode == MODES.CLI:
+        if mode == "cli":
             self.loadCliMode()
         else:
             self.loadGraphicalMode(mode, configurationFile)
