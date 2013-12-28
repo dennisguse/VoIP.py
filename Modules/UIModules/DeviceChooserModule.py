@@ -26,7 +26,6 @@ class DeviceChooserModule(QDialog):
         currentSettings = AudioDeviceModule.AudioDeviceModule().getAudioDeviceSettings()
         if currentSettings.playbackDevId == None or currentSettings.captureDevId == None: #TODO Check for not existing
             self.initDialog()
-            self.dialog.show()
             self.dialog.exec_()
 
     def dismiss(self):
@@ -52,7 +51,8 @@ class DeviceChooserModule(QDialog):
 
     def save(self):
         (inputId, ok) = self.dialog.cmbDeviceInput.itemData(self.dialog.cmbDeviceInput.currentIndex()).toInt()
-        (outputId,ok) = self.dialog.cmbDeviceOutput.itemData(self.dialog.cmbDeviceOutput.currentIndex()).toInt()
+        (outputId, ok) = self.dialog.cmbDeviceOutput.itemData(self.dialog.cmbDeviceOutput.currentIndex()).toInt()
+        #TODO Do sanity check here (is device still there?)
         self.lib.set_snd_dev(inputId, outputId)
 
         self.dialog.done(0)
