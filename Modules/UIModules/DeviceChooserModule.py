@@ -6,6 +6,12 @@ import Modules.UIModules.RESOURCES as UIResources
 import pjsua
 import logging
 
+#TODO Add single selector mode (in one class).
+#TODO Add logging
+#TODO Refactor snd to audio
+#TODO Use of QVariant (with SndDevice); better solution than using device.name.
+#TODO Check for updates from PJSIP?
+
 class DeviceChooserModule(QDialog):
 
     def __init__(self):
@@ -18,7 +24,7 @@ class DeviceChooserModule(QDialog):
 
     def start(self):
         currentSettings = AudioDeviceModule.AudioDeviceModule().getAudioDeviceSettings()
-        if currentSettings.playbackDevId == None or currentSettings.captureDevId == None:
+        if currentSettings.playbackDevId == None or currentSettings.captureDevId == None: #TODO Check for not existing
             self.initDialog()
             self.dialog.show()
             self.dialog.exec_()
@@ -27,28 +33,30 @@ class DeviceChooserModule(QDialog):
         pass
 
     def initDialog(self):
-        self.dia = uic.loadUi(UIResources.RESCOURCES_UI["DeviceChooserDialog"], self)
+        self.dialog = uic.loadUi(UIResources.RESCOURCES_UI["DeviceChooserDialog"], self)
         self.dialog.btn.clicked.connect(self.save)
         self.lib = pjsua.Lib.instance()
         self.sndDevices = self.lib.enum_snd_dev()
         for device in self.sndDevices:
             print(device.name, " (Input-ID:", str(device.input_channels), " // Output-ID ", str(device.output_channels), ") Device-ID: ", str(device.device_id))
             if device.input_channels > 0:
-                 self.dialog.cmbDeviceInput.addItem(device.name)
+                 self.dialog.cmbDeviceInput.addItem(device.name, device.device_id)
             if device.output_channels > 0:
-                 self.dialog.cmbDeviceOutput.addItem(device.name)
+                 self.dialog.cmbDeviceOutput.addItem(device.name, device.device_id)
+
+#        self.dialog.cmbDeviceInput.currentIndexChanged['QString'].connect(self.cmbInputIndexChanged)
+
+#    def cmbInputIndexChanged(self, index):
+#        print("Changed " + newIndex)
+#        return
 
     def save(self):
-        inputId = 0 	#Default device
-        outputId = 0	#Default device
-        for device in self.sndDevices: #TODO Check for sndDevice updates.
-            if self.dialog.cmbDeviceInput.currentText() == device.name:
-                inputId = device.device_id
-            if self.dialog.cmbDeviceOutput.currentText() == device.name:
-                outputId = device.device_id
+        (inputId, ok) = self.dialog.cmbDeviceInput.itemData(self.dialog.cmbDeviceInput.currentIndex()).toInt()
+        (outputId,ok) = self.dialog.cmbDeviceOutput.itemData(self.dialog.cmbDeviceOutput.currentIndex()).toInt()
         self.lib.set_snd_dev(inputId, outputId)
 
         self.dialog.done(0)
+        return
 
     def reject(self): #Ignore ESC
         return;
