@@ -1,7 +1,0 @@
-CLI    = 'cli'
-SIMPLE = 'simple'
-STANDARD = 'standard'
-EXPERT = 'expert'
-STUPID = 'stupid'
-SIMPLE = 'video'
-SIMPLEVIDEO = 'simpleVideo'
