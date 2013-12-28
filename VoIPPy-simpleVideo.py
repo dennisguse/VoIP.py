@@ -9,7 +9,7 @@ def main():
     logging.info("VoIPPy starting....")
     signal.signal(signal.SIGINT, signal.SIG_DFL) #This one will enable your CTRL+C
 
-    ModuleHandler(Modes.SIMPLE)
+    ModuleHandler(Modes.SIMPLEVIDEO)
 
     logging.info("Exiting program")
 
