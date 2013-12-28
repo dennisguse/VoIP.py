@@ -16,7 +16,7 @@ class DeviceChooserModule(QDialog):
 
     def __init__(self):
         super(DeviceChooserModule, self).__init__(None)
-        self.sndDevices = None
+        self.audioDeviceList = pjsua.Lib.instance().enum_snd_dev()
         return
 
     def hasSignalsToRegister(self):
@@ -34,26 +34,24 @@ class DeviceChooserModule(QDialog):
     def initDialog(self):
         self.dialog = uic.loadUi(UIResources.RESCOURCES_UI["DeviceChooserDialog"], self)
         self.dialog.btn.clicked.connect(self.save)
-        self.lib = pjsua.Lib.instance()
-        self.sndDevices = self.lib.enum_snd_dev()
-        for device in self.sndDevices:
+        for device in self.audioDeviceList:
             print(device.name, " (Input-ID:", str(device.input_channels), " // Output-ID ", str(device.output_channels), ") Device-ID: ", str(device.device_id))
             if device.input_channels > 0:
                  self.dialog.cmbDeviceInput.addItem(device.name, device.device_id)
             if device.output_channels > 0:
                  self.dialog.cmbDeviceOutput.addItem(device.name, device.device_id)
 
-#        self.dialog.cmbDeviceInput.currentIndexChanged['QString'].connect(self.cmbInputIndexChanged)
+        self.dialog.cmbDeviceInput.currentIndexChanged['QString'].connect(self.cmbInputIndexChanged)
 
-#    def cmbInputIndexChanged(self, index):
-#        print("Changed " + newIndex)
-#        return
+    def cmbInputIndexChanged(self, newValue):
+        #TODO Add auto update for Output automatically; requires sanity check if device exists.
+        return
 
     def save(self):
         (inputId, ok) = self.dialog.cmbDeviceInput.itemData(self.dialog.cmbDeviceInput.currentIndex()).toInt()
         (outputId, ok) = self.dialog.cmbDeviceOutput.itemData(self.dialog.cmbDeviceOutput.currentIndex()).toInt()
         #TODO Do sanity check here (is device still there?)
-        self.lib.set_snd_dev(inputId, outputId)
+        pjsua.Lib.instance().set_snd_dev(inputId, outputId)
 
         self.dialog.done(0)
         return
