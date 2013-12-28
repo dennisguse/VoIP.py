@@ -20,46 +20,35 @@ class DeviceChooserModule(QDialog):
         currentSettings = AudioDeviceModule.AudioDeviceModule().getAudioDeviceSettings()
         if currentSettings.playbackDevId == None or currentSettings.captureDevId == None:
             self.initDialog()
-            self.dia.show()
-            self.dia.exec_()
+            self.dialog.show()
+            self.dialog.exec_()
 
     def dismiss(self):
         pass
 
     def initDialog(self):
         self.dia = uic.loadUi(UIResources.RESCOURCES_UI["DeviceChooserDialog"], self)
-        self.dia.btn.clicked.connect(self.save)
+        self.dialog.btn.clicked.connect(self.save)
         self.lib = pjsua.Lib.instance()
         self.sndDevices = self.lib.enum_snd_dev()
         for device in self.sndDevices:
             print(device.name, " (Input-ID:", str(device.input_channels), " // Output-ID ", str(device.output_channels), ") Device-ID: ", str(device.device_id))
             if device.input_channels > 0:
-                 self.dia.cmbDeviceInput.addItem(device.name)
+                 self.dialog.cmbDeviceInput.addItem(device.name)
             if device.output_channels > 0:
-                 self.dia.cmbDeviceOutput.addItem(device.name)
+                 self.dialog.cmbDeviceOutput.addItem(device.name)
 
     def save(self):
-        inputId = 0
-        outputId = 0
-        for device in self.sndDevices:
-            if self.dia.cmbDeviceInput.currentText() == device.name:
+        inputId = 0 	#Default device
+        outputId = 0	#Default device
+        for device in self.sndDevices: #TODO Check for sndDevice updates.
+            if self.dialog.cmbDeviceInput.currentText() == device.name:
                 inputId = device.device_id
-            if self.dia.cmbDeviceOutput.currentText() == device.name:
+            if self.dialog.cmbDeviceOutput.currentText() == device.name:
                 outputId = device.device_id
         self.lib.set_snd_dev(inputId, outputId)
-        self.dia.close()
-        #self.showWaring()
 
-    def getId(self, text, position):
-        if position == 0:
-            return int(text.split("(hw:")[1][0])
-        else:
-            return int(text.split("(hw:")[1][2])
+        self.dialog.done(0)
 
-    def showWaring(self):
-	return
-        diaWaring = QMessageBox()
-        diaWaring.setWindowTitle('Attention!')
-        diaWaring.setText('Because of the incredible laziness of the developer you have to set the device id by your self in the file:\n Modules.ConfigModules.AudioDeviceModule\nIf you want to avoid if dialog')
-        diaWaring.show()
-        diaWaring.exec_()
+    def reject(self): #Ignore ESC
+        return;
