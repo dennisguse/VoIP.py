@@ -8,7 +8,7 @@ class CallCallBack(pj.CallCallback):
     def __init__(self, dumpSettings, callClear, controllerCallBack,  call=None,  pjLib=None):
         pj.CallCallback.__init__(self, call)
         self.lib = pjLib
-        self.recorderID = None        
+        self.recorderID = None
         self.callActive = False
         self.callCanceledBeforeConnect = controllerCallBack.incomingCallCanceled
         self.dumpSettings= dumpSettings
@@ -17,9 +17,7 @@ class CallCallBack(pj.CallCallback):
         self.callEstablished = controllerCallBack.onCallEstablised
     
     def on_state(self):
-        print("Call is ", self.call.info().state_text)
-        print("last code =", self.call.info().last_code)
-        print("(" + self.call.info().last_reason + ")")
+        print("Call is " + self.call.info().state_text + " last code =" + str(self.call.info().last_code) + "(" + self.call.info().last_reason + ")")
         if self.call.info().state == pj.CallState.DISCONNECTED:
             #TODO Disconnect ports only if they were connected (otherwise PJSIP dies.)
             #Should be fixed, but we have to test that!
@@ -36,10 +34,9 @@ class CallCallBack(pj.CallCallback):
             self.callClear()
             self.disconnectRecorder()
         elif self.call.info().state == pj.CallState.CONFIRMED:
-            print("Call establshed")
+            print("Call established")
             self.callEstablished()
 
-    
     def on_media_state(self):
         if self.call.info().media_state == pj.MediaState.ACTIVE:
             if self.callActive == False:
@@ -51,10 +48,9 @@ class CallCallBack(pj.CallCallback):
         else:
             self.debugMediaState()
 
-
     def connectConfSlots(self):
-        self.call_slot = self.call.info().conf_slot
         print("Connecting conf slots")
+        self.call_slot = self.call.info().conf_slot
         self.lib.conf_connect(0, self.call_slot)
         self.lib.conf_connect(self.call_slot, 0)
         if self.dumpSettings.dumpWave == True:
@@ -85,7 +81,7 @@ class CallCallBack(pj.CallCallback):
         elif self.call.info().media_state == pj.MediaState.REMOTE_HOLD:
              print("Media state REMOTE_HOLD")
         else:
-            print("Media state is unknown code: " + str(self.call.info().media_state))
+             print("Media state is unknown code: " + str(self.call.info().media_state))
 
 
     def writeCallStats(self):

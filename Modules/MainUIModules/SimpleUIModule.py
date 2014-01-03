@@ -93,7 +93,6 @@ class SimpleUI(AbstractUIModule,  QtGui.QWidget):
     def btnStartCall(self):
         SIGNALS.emit(self, SIGNALS.CALL_NUMBER, self.numberToCall)
         self.__ui.btn.setText("Auflegen")
-        self.__ui.cbPreview.setCheckable(False)
         self.__ui.btn.clicked.disconnect()
         self.__ui.btn.clicked.connect(self.btnHangup)
         
@@ -101,7 +100,6 @@ class SimpleUI(AbstractUIModule,  QtGui.QWidget):
         SIGNALS.emit(self, SIGNALS.CALL_CONNECT)     
         self.emit(SIGNAL(SIGNALS.MODULE_DISMISS),  self.MODULES_TO_LOAD[2])    
         self.__ui.btn.setText("Auflegen")
-        self.__ui.cbPreview.setCheckable(False)
         self.__ui.btn.clicked.disconnect()        
         self.__ui.btn.clicked.connect(self.btnHangup)
     
