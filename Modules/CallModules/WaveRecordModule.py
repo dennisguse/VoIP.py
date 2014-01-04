@@ -18,7 +18,7 @@ class WaveRecordModule(AbstractModule):
         self.logger.info("Stopping to record calls!")
         
     def recordWave(self):
-        SignalHandler.getInstance().sipHandler.dumpSettings.dumpWave = True
+        SignalHandler.getInstance().sipController.dumpSettings.dumpWave = True
         
     def stopRecordWave(self):
-        SignalHandler.getInstance().sipHandler.dumpSettings.dumpWave = False        
+        SignalHandler.getInstance().sipController.dumpSettings.dumpWave = False

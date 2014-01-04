@@ -18,7 +18,7 @@ class SingleBuddyModule(QObject,AbstractModule):
             self.buddyURI = readFirstBuddyURI()
         if self.buddyURI:
             self.logger.info("Starting to track buddy with URI " + self.buddyURI)
-            SignalHandler.getInstance().sipHandler.addBuddy(self.buddyURI, self.onBuddyStateChanged)
+            SignalHandler.getInstance().sipController.addBuddy(self.buddyURI, self.onBuddyStateChanged)
 
     def hasSignalsToRegister(self):
         return True
