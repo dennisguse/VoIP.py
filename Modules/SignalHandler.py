@@ -1,4 +1,5 @@
 import logging
+import sys
 from PyQt4.QtCore import QObject
 from PyQt4.QtCore import SIGNAL
 from SIPController.SipController import SipController
@@ -23,14 +24,14 @@ class SignalHandler(QObject):
         self.dismissModule = dismissModule
         self.signalSource = None
         self.controllerCallBacks = ControllerCallBacksHolder(self.onIncomingCall, self.onIncomingCallCanceled, self.onCallEstablished, self.onOutgoingCallCanceled, self.onRegStateChanged)
-        self.sipHandler = SipController(self.controllerCallBacks)
+        self.sipController = SipController(self.controllerCallBacks)
         self.establishedCall = False
 
     def getInstance(self):
         return self
 
     def setIncomingSignalSource(self, signalSource):
-        self.signalSource = signalSource        
+        self.signalSource = signalSource
         self.registerStandardSignals()
         self.signalSource.registerNewModules()
 
@@ -43,7 +44,7 @@ class SignalHandler(QObject):
         self.connect(self.signalSource, SIGNAL(SIGNALS.CALL_NUMBER), self.onCallSignal)
         self.connect(self.signalSource, SIGNAL(SIGNALS.CALL_CONNECT), self.onConnectCallSignal)
         self.connect(self.signalSource, SIGNAL(SIGNALS.CALL_HANGUP), self.onHangupCallSignal)
-        self.connect(self.signalSource, SIGNAL(SIGNALS.REGISTER_REQUEST_INITIAL_STATE), self.sipHandler.onRegStateChanged)
+        self.connect(self.signalSource, SIGNAL(SIGNALS.REGISTER_REQUEST_INITIAL_STATE), self.sipController.onRegStateChanged)
         self.connect(self.signalSource, SIGNAL(SIGNALS.CALL_SIGNAL_LEVEL_REQUEST), self.onSignalLevelChangeRequest)
 
     def registerNewSignal(self, signalSource, signalName, signalCallBack = None, internalMethodToCall = None):
@@ -60,30 +61,34 @@ class SignalHandler(QObject):
 
     def onCloseLibSignal(self):
         try:
-            self.sipHandler.freeLib()
+            self.sipController.freeLib()
         except:
-            self.logger.debug("Unable to free lib")
+            ex = sys.exc_info()[0]
+            self.logger.error("Unable to free lib: " + str(ex))
         return
 
     def onCallSignal(self,  numberToCall):
         self.logger.info("Calling number: " + numberToCall)
         try:
-            self.sipHandler.callNumber(numberToCall)
+            self.sipController.callNumber(numberToCall)
         except:
-            self.logger.error("Unable to call " + numberToCall)
+            ex = sys.exc_info()[0]
+            self.logger.error("Unable to call " + numberToCall + ": " + str(ex))
 
     def onConnectCallSignal(self):
         self.logger.info("Accept incoming call")
         try:
-            self.sipHandler.currentCall.answer()
+            self.sipController.currentCall.answer()
         except:
+            ex = sys.exc_info()[0]
             self.logger.error("Unable to connect current call")
 
     def onHangupCallSignal(self):
         self.logger.info("Hangup call")
         try:
-            self.sipHandler.hangup()
+            self.sipController.hangup()
         except:
+            ex = sys.exc_info()[0]
             self.logger.error("Unable to hangup call")
 
     ####################################
@@ -92,7 +97,7 @@ class SignalHandler(QObject):
 
     def onIncomingCall(self):
         self.logger.info("Incoming call")
-        self.emit(SIGNAL(SIGNALS.CALL_INCOMING),  self.sipHandler.getCurrentCallingNumber())
+        self.emit(SIGNAL(SIGNALS.CALL_INCOMING),  self.sipController.getCurrentCallingNumber())
 
     def onIncomingCallCanceled(self):
         self.logger.info("Incoming call hangup before anwsering")
@@ -118,9 +123,9 @@ class SignalHandler(QObject):
         self.logger.info("Call established")
         self.emit(SIGNAL(SIGNALS.CALL_ESTABLISHED))
         #Video? TODO Document
-        if self.sipHandler.currentCall.info().vid_cnt != 0:
-            self.emit(SIGNAL(SIGNALS.CALL_SHOW_VIDEO), self.sipHandler.getCurrentCallVideoStream())
+        if self.sipController.currentCall.info().vid_cnt != 0:
+            self.emit(SIGNAL(SIGNALS.CALL_SHOW_VIDEO), self.sipController.getCurrentCallVideoStream())
 
     def onSignalLevelChangeRequest(self):
-        if self.sipHandler.currentCallCallback:
-            self.emit(SIGNAL(SIGNALS.CALL_SIGNAL_LEVEL_CHANGE), self.sipHandler.currentCallCallback.getCallLevels())
+        if self.sipController.currentCallCallback:
+            self.emit(SIGNAL(SIGNALS.CALL_SIGNAL_LEVEL_CHANGE), self.sipController.currentCallCallback.getCallLevels())

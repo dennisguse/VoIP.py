@@ -32,7 +32,6 @@ class SipController(object):
         self.recordWav = 0
         self.accountBuddys = None
         self.logger = logging.getLogger('SipController') #TODO
-        self.logger.setLevel(logging.DEBUG) #TODO
 
 
         self.codecList = codecList #TODO write module
@@ -58,13 +57,12 @@ class SipController(object):
         self.dumpSettings = DumpSettingsModule.DumpSettingsModule().getDumpSettings()
         self.audioDevice = AudioDeviceModule.AudioDeviceModule().getAudioDeviceSettings()
 
-    def log_cb(self,level,str,len):
+    def log_cb(self,level,message):
         """
         Logs all pjsua informations on the console
         """
-        print  (level)
-        print (str)
-        return	
+        #TODO Not yet used.
+        self.logger.info(level + " " + message)
 
     def initLib(self):
         """
@@ -156,16 +154,16 @@ class SipController(object):
         @type number: number
         @param number: The number to call
         """
-        self.logger.info("Trying to call sip:" + str(number) + "@" + str(self.accountInfo.sipServerAddress))
+        self.logger.info("Trying to call sip: " + str(number) + "@" + str(self.accountInfo.sipServerAddress))
         if self.currentCall == None:
             toCall = "sip:" + str(number) + "@" + str(self.accountInfo.sipServerAddress)
-            self.logger.info('Calling' + toCall)
+            self.logger.info('Calling ' + toCall)
             self.currentCall = self.pjAccount.make_call(str(toCall), self.pjCallCallBack)
             self.currentCallCallback = CallCallBack.CallCallBack(self.dumpSettings, self.callClear, self.controllerCallBack,  self.currentCall,  self.pjLib)
             self.currentCall.set_callback(self.currentCallCallback)
             return self.currentCall
         else:
-            self.logger.error("Only one call is allowed!")
+            self.logger.warning("Only one call is allowed!")
             raise 
 
     def hangup(self):
@@ -173,15 +171,16 @@ class SipController(object):
         Hangs up the current call.
         It's also save to use if there is no current call.
         """
-        if self.currentCall != None:        
+        self.logger.info("Hangup current call")
+        if self.currentCall != None:
             self.currentCall.userHangup = True
             self.currentCall.hangup(200)
             self.currentCall = None
             self.currentCallCallback = None
-            #self.pjLib.recorder_destroy(self.recorderID)
+            #self.pjLib.recorder_destroy(self.recorderID) #TODO Check if needed.
         else:
             try:
-                self.pjAccountCb.hangup(200)
+                self.pjAccountCb.hangup(200) #TODO Use status code?
             except:
                 pass
         return
@@ -209,9 +208,9 @@ class SipController(object):
 
     def onIncommingCall(self,  call = None):
         if self.currentCall != None:
-            call.hangup(468)
-        self.currentCall = call
-        self.logger.info('Incomming call from' + call.info().remote_uri)
+            call.hangup(468) #TODO status code
+
+        self.logger.info('Incoming call from ' + self.currentCall.info().remote_uri)
         self.currentCallCallback = CallCallBack.CallCallBack(self.dumpSettings, self.callClear, self.controllerCallBack,  self.currentCall,  self.pjLib)
         self.currentCall.set_callback(self.currentCallCallback)
         self.controllerCallBack.connectIncomingCall()
@@ -223,7 +222,7 @@ class SipController(object):
     def setPresenceStatus(self, is_online, activity="", pres_text="", rpid_id=""):
         self.pjAccount.set_presence_status(is_online,  activity,  pres_text,  rpid_id)
 
-    def getRegState(self):
+    def getRegState(self): #TODO Refactor to getRegistrationState
         """
         Provides the registration state of the client.
         @rtype: bool

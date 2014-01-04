@@ -38,8 +38,9 @@ class CodecList(object):
         return len(self.__codecList)
         
     def printList(self):
+        #TODO Remove: is only used for development?
         for codec in self.__codecList:
-            print codec.name
+            print(codec.name)
     
     def checkIfCodecInList(self, codecName):
         pass

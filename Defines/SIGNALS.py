@@ -30,7 +30,7 @@ REGISTER_STATE_CHANGE = 'regStateChanged'
 CLOSE = 'closeProg'
 
 def emit(sender, signalName,  param1 = None,  param2 = None):
-    logging.info("SIGNAL: "  + sender.__class__.__name__ + " " + signalName)
+    logging.getLogger("SIGNALS").info(sender.__class__.__name__ + " " + signalName)
     if param2:
         sender.emit(SIGNAL(signalName),  param1,  param2)
     elif param1:
