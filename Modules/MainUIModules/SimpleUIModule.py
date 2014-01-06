@@ -105,7 +105,6 @@ class SimpleUI(AbstractUIModule,  QtGui.QWidget):
     
     def btnHangup(self):
         SIGNALS.emit(self, SIGNALS.CALL_HANGUP)
-        self.disableSignalLevelBars()
         self.__ui.btn.setText("Anrufen")
         self.__ui.btn.clicked.disconnect()
         self.__ui.btn.clicked.connect(self.btnStartCall)
