@@ -209,7 +209,7 @@ class SipController(object):
     def onIncommingCall(self,  call = None):
         if self.currentCall != None:
             call.hangup(468) #TODO status code and loggging
-        else
+        else:
             self.currentCall = call
 
             self.logger.info('Incoming call from ' + self.currentCall.info().remote_uri)
