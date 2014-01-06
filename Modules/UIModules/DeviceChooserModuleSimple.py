@@ -37,7 +37,7 @@ class DeviceChooserModuleSimple(QDialog):
         self.dialog = uic.loadUi(UIResources.RESCOURCES_UI["DeviceChooserDialogSimple"], self)
         self.dialog.btn.clicked.connect(self.save)
         for device in self.audioDeviceList:
-            #print(device.name, " (Input-Channels:", str(device.input_channels), " // Output-Channels ", str(device.output_channels), ") Device-ID: ", str(device.device_id))
+            self.logger.debug(device.name, " (Input-Channels:", str(device.input_channels), " // Output-Channels ", str(device.output_channels), ") Device-ID: ", str(device.device_id))
             if (device.input_channels > 0) and (device.output_channels > 0):
                  self.dialog.cmbDeviceInput.addItem(device.name, device.device_id)
 
