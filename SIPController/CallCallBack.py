@@ -1,6 +1,7 @@
 import pjsua as pj
 import time
 import PyQt4.QtCore
+import logging
 from SIPController.ControllerCallBacksHolder import ControllerCallBacksHolder
 
 class CallCallBack(pj.CallCallback):
