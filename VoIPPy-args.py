@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import signal
 import logging
 from optparse import OptionParser
