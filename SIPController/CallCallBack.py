@@ -91,6 +91,7 @@ class CallCallBack(pj.CallCallback):
             if self.numberRecorderSlotsConnected > 0:
                 self.lib.conf_disconnect(self.call_slot, recorderSlot)
                 self.lib.conf_disconnect(recorderSlot, self.call_slot)
+                self.numberRecorderSlotsConnected = self.numberRecorderSlotsConnected - 1
                 self.recorderID = None
             else:
                 self.logger.error("Unable to disconnect recorder slots, no recorder slots connected")
