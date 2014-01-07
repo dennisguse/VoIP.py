@@ -115,8 +115,3 @@ class CallCallBack(pj.CallCallback):
     def getCallLevels(self):
         return self.lib.conf_get_signal_level(self.call_slot)
 
-    def __del__(self):
-        while self.numberRecorderSlotsConnected > 0:
-            self.disconnectRecorder()
-        while self.numberConfSlotsConnected > 0:
-            sefl.disconnectConfSlots()
