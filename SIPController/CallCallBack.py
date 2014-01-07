@@ -47,7 +47,11 @@ class CallCallBack(pj.CallCallback):
                 self.connectConfSlots()
             else:
                 self.logger.debug("Re-connected conf slots!")
-                self.disconnectConfSlots()
+                try:
+                    self.disconnectConfSlots()
+                except:
+                    #TODO double check here
+                    print("No conf slots to disconnect")
                 self.connectConfSlots()
         else:
             self.debugMediaState()
