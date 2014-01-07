@@ -23,6 +23,7 @@ class SimpleUI(AbstractUIModule,  QtGui.QWidget):
         QtGui.QWidget.__init__(self, parent)   
         self.signalSource = signalSource
         self.__ui = uic.loadUi(MainUIResources.RESCOURCES_MAINUI["Simple"], self)
+        self.move(QtGui.QApplication.desktop().screen().rect().center()- self.rect().center()) #Move window to center
         self.connectButtons()
         self.connectSignals()
         self.numberToCall = readFirstBuddyNumber()

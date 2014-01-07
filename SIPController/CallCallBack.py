@@ -63,10 +63,13 @@ class CallCallBack(pj.CallCallback):
         self.lib.conf_connect(self.call_slot, 0)
         if self.dumpSettings.dumpWave == True:
             file_name = time.time()
-            self.recorderID = self.lib.create_recorder(str(file_name) + '.wav')
-            recorderSlot = self.lib.recorder_get_slot(self.recorderID)
-            self.lib.conf_connect(self.call_slot, recorderSlot)
-            self.lib.conf_connect(recorderSlot, self.call_slot)
+            try:   
+                self.recorderID = self.lib.create_recorder(str(file_name) + '.wav')
+                recorderSlot = self.lib.recorder_get_slot(self.recorderID)
+                self.lib.conf_connect(self.call_slot, recorderSlot)
+                self.lib.conf_connect(recorderSlot, self.call_slot)
+            except:
+                print("Recorder not created!")
 
     def disconnectConfSlots(self):
         self.logger.info("Dis-connecting conf slots")
