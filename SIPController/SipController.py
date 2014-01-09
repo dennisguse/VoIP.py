@@ -83,7 +83,7 @@ class SipController(object):
                 if self.mediaConf is None:
                     self.pjLib.init(uaCfg, log_cfg = pj.LogConfig(level=int(self.dumpSettings.pjLogLevel), callback=self.log_cb))
                 else:
-                    self.pjLib.init(uaCfg, log_cfg = pj.LogConfig(level=int(self.dumpSettings.pjLogLevel), callback=self.log_cb), media_cfg=self.mediaConf)
+                    self.pjLib.init(uaCfg, log_cfg = pj.LogConfig(level=int(self.dumpSettings.pjLogLevel), filename="/tmp/VoIP.log", callback=self.log_cb), media_cfg=self.mediaConf)
             if self.audioDevice.captureDevId != None and self.audioDevice.playbackDevId != None:
                 self.pjLib.set_snd_dev(self.audioDevice.captureDevId, self.audioDevice.playbackDevId)
             self.pjLib.start()
@@ -107,9 +107,9 @@ class SipController(object):
 
 
                 #TODO
-                acc_cfg.video_outgoing_default = True
-                acc_cfg.video_capture_device = 0
-                acc_cfg.video_render_device = -2
+                #acc_cfg.video_outgoing_default = True
+                #acc_cfg.video_capture_device = 0
+                #acc_cfg.video_render_device = -2
 
 
                 acc_cfg.auth_cred = [pj.AuthCred("*", str(self.accountInfo.sipName), str(self.accountInfo.sipSecret))] #No better way using bindings?
@@ -211,11 +211,11 @@ class SipController(object):
             call.hangup(468) #TODO status code and loggging
         else:
             self.currentCall = call
-
             self.logger.info('Incoming call from ' + self.currentCall.info().remote_uri)
             self.currentCallCallback = CallCallBack.CallCallBack(self.dumpSettings, self.callClear, self.controllerCallBack,  self.currentCall,  self.pjLib)
             self.currentCall.set_callback(self.currentCallCallback)
             self.controllerCallBack.connectIncomingCall()
+            self.logger.debug("SipController informed about incomming call")
 
     def callClear(self):
         self.currentCall = None
