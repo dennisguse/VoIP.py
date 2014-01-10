@@ -13,8 +13,8 @@ class CodecList(object):
         param.ptime = 0
         param.vad_enabled = False
         param.plc_enabled = False
-        self.addCodec('g722/16000/1',  param)
-        
+        self.addCodec('G722/16000/1',  param) #TODO Move to Config/CodecConfigurationModule.py
+        self.addCodec('L16/16000/1', 1)
         
     def initWithList(self,  list):
         for codec in list:

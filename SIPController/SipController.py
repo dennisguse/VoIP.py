@@ -36,8 +36,6 @@ class SipController(object):
 
         self.codecList = codecList #TODO write module
 
-
-
         if controllerCallBack:
             self.controllerCallBack = controllerCallBack
         else:
@@ -48,6 +46,9 @@ class SipController(object):
         self.initFromConfiguration()
         self.initLib()
         self.registerClient()
+
+        #TODO REMOVE!!!!!!!!!
+        lib.set_codec_priority("L16/16000/1", 1)
         return
 
     def initFromConfiguration(self):

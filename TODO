@@ -1,9 +1,28 @@
 Config
 * Remove FirstBuddy* and replace with useful impl.
+* CodecConfiguration
+* VideoCodecConfiguration
+* Coding style (inheritance)
 
 SIP 
 * Check SIP return codes (especially if registration fails and call fails) and state the reason (at least in the console)
-* Enable MediaConf
 
 Logging
-* Not yet there.... at least not yet useful
+* Not yet there.... at least not yet useful: PJ_LOG stops working, if python logging starts: must be merged!
+
+Misc
+* CTRL-C does not work (after QT is opened)
+
+Ringtone
+* Generate ringtone on ringing! (SIP:180)
+
+Startup
+* Only register, if audio device is selected (at least set ready only then)
+
+Shutdown
+* Nice animation
+
+
+Style (keep everything readable <<)
+* don't import pjsua as psjip
+* avoid using PJSIP variable naming style
