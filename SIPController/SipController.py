@@ -1,4 +1,5 @@
 import logging
+import PJSIPLoggingCallBack
 
 import pjsua as pj
 from ConfigModules import AccountConfigModule, AudioDeviceModule, DumpSettingsModule, MediaConfigModule, NetworkSettingsModule
@@ -14,11 +15,12 @@ class SipController(object):
     Handles the SIP interactions of the client.
     """
 
-    #TODO remove codec list
     def __init__(self, controllerCallBack = None, codecList = None):
         """
         Initializes the sip handler.
         """
+        self.logger = logging.getLogger('SipController') #TODO
+
         self.pjAccount = None
         self.pjAccountCb = None
         self.pjLib = None
@@ -28,13 +30,8 @@ class SipController(object):
         self.accountInfo = None
         self.transport = None
 
-        self.loglevel = 0
         self.recordWav = 0
         self.accountBuddys = None
-        self.logger = logging.getLogger('SipController') #TODO
-
-
-        self.codecList = codecList #TODO write module
 
         if controllerCallBack:
             self.controllerCallBack = controllerCallBack
@@ -42,13 +39,12 @@ class SipController(object):
             self.controllerCallBack = ControllerCallBacksHolder()
 
 
-
         self.initFromConfiguration()
         self.initLib()
         self.registerClient()
 
-        #TODO REMOVE!!!!!!!!!
-        lib.set_codec_priority("L16/16000/1", 1)
+        #TODO REMOVE!!!!!!!!! Must be done via Configuration
+        self.pjLib.set_codec_priority("L16/16000/1", 1)
         return
 
     def initFromConfiguration(self):
@@ -58,13 +54,6 @@ class SipController(object):
         self.dumpSettings = DumpSettingsModule.DumpSettingsModule().getDumpSettings()
         self.audioDevice = AudioDeviceModule.AudioDeviceModule().getAudioDeviceSettings()
 
-    def log_cb(self,level,message):
-        """
-        Logs all pjsua informations on the console
-        """
-        #TODO Not yet used.
-        self.logger.info(level + " " + message)
-
     def initLib(self):
         """
         Initializes the SIP library.
@@ -72,26 +61,27 @@ class SipController(object):
         try:
             self.pjLib = pj.Lib()
             uaCfg = pj.UAConfig()
-            uaCfg.max_calls = 2 #TODO Should onyl be 1 or at least configurable...
-            if self.accountInfo.hasStunSupport():
-                uaCfg.stun_host = str(self.accountInfo.stunServer)            
-                if self.mediaConf is None:
-                    self.pjLib.init(uaCfg, log_cfg = pj.LogConfig(level=int(self.dumpSettings.pjLogLevel), callback=self.log_cb))
-                else:
-                    self.pjLib.init(uaCfg, log_cfg = pj.LogConfig(level=int(self.dumpSettings.pjLogLevel), callback=self.log_cb), media_cgf=self.mediaConf)
+            uaCfg.max_calls = 2 #TODO Should onlyl be 1 or at least configurable... (at the moment it is a bug in the base lib...)
+
+            if self.accountInfo.hasStunSupport(): #STUN
+                uaCfg.stun_host = str(self.accountInfo.stunServer)
                 self.logger.info("STUN enabled")
-            else:
-                if self.mediaConf is None:
-                    self.pjLib.init(uaCfg, log_cfg = pj.LogConfig(level=int(self.dumpSettings.pjLogLevel), callback=self.log_cb))
-                else:
-                    self.pjLib.init(uaCfg, log_cfg = pj.LogConfig(level=int(self.dumpSettings.pjLogLevel), filename="/tmp/VoIP.log", callback=self.log_cb), media_cfg=self.mediaConf)
-            if self.audioDevice.captureDevId != None and self.audioDevice.playbackDevId != None:
+
+            if self.mediaConf is None: #MediaConfiguration
+                self.mediaConf = pjsua.MediaConfig() #TODO Make mediaconfig mandatory and handle this in class
+
+            self.pjLib.init(uaCfg, log_cfg = pj.LogConfig(level=int(self.dumpSettings.pjLogLevel), callback=PJSIPLoggingCallBack.log), media_cfg=self.mediaConf)
+
+            if self.audioDevice.captureDevId != None and self.audioDevice.playbackDevId != None: #TODO make this via module / callback or whatever.
                 self.pjLib.set_snd_dev(self.audioDevice.captureDevId, self.audioDevice.playbackDevId)
             self.pjLib.start()
         except:
             self.pjLib.destroy()
             self.pjLib = None
+            self.logger.error("PJSIP could not be started.")
+            #TODO LOGGGGGGG and die!
         return
+
 
     def registerClient(self):
         """
@@ -266,15 +256,8 @@ class SipController(object):
         except:
             return None
 
-    def reinitLibWithNewMedia(self,  mediaConf):
+    def reinitLibWithNewMedia(self,  mediaConf): #TODO Merge with init? 
+        self.mediaConf = mediaConf
         self.freeLib()
         self.initLib()
         self.registerClient()
-
-    def listCodecs(self):
-        if self.codecList == None:
-            self.codecList = CodecList.CodecList()
-            self.codecList.initWithList(self.pjLib.enum_codecs())
-            self.codecList.printList()
-            #sc = SipConfigParser.SipConfigParser()
-            #sc.writeCodecList(self.codecList)
