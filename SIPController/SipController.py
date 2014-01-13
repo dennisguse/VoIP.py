@@ -2,7 +2,7 @@ import logging
 import PJSIPLoggingCallBack
 
 import pjsua as pj
-from ConfigModules import AccountConfigModule, AudioDeviceModule, DumpSettingsModule, MediaConfigModule, NetworkSettingsModule
+from ConfigModules import AccountConfigModule, AudioDeviceModule, DumpSettingsModule, MediaConfigModule, NetworkSettingsModule, CodecConfigurationModule
 import SIPController.AccountCallBack as accountCallB
 import SIPController.CallCallBack as CallCallBack
 import SIPController.PresenceCallBack as PresenceCallBack
@@ -42,7 +42,7 @@ class SipController(object):
         self.registerClient()
 
         #TODO REMOVE!!!!!!!!! Must be done via Configuration
-        self.pjLib.set_codec_priority("L16/16000/1", 1)
+        CodecConfigurationModule.applyConfiguration(self.pjLib)
         return
 
     def initFromConfiguration(self):
@@ -59,7 +59,13 @@ class SipController(object):
         try:
             self.pjLib = pj.Lib()
             uaCfg = pj.UAConfig()
-            uaCfg.max_calls = 2 #TODO Should onlyl be 1 or at least configurable... (at the moment it is a bug in the base lib...)
+            uaCfg.max_calls = 32 #TODO Should onl be 1 or at least configurable... (at the moment it is a bug in the base lib...)
+            #its a "bug" in PJSIP; call.hangup does not remove the call *immediately*, but waits up 32s until the call is removed from call array.
+            #Therefore an incoming call might overwrite the already used (but hangup) callslot.
+            #Therefore the call_id of both calls is the same(!) and the timeout callback of the hangup call will kill the callback handler of the currently running call.
+            #Since pjsua uses the call->user_data struct of pjsip to store the reference to the python call reference....
+            #And then we are stuck....
+            #It is a race condition.
 
             if self.accountInfo.hasStunSupport(): #STUN
                 uaCfg.stun_host = str(self.accountInfo.stunServer)
@@ -77,7 +83,7 @@ class SipController(object):
             self.pjLib.destroy()
             self.pjLib = None
             self.logger.error("PJSIP could not be started.")
-            #TODO LOGGGGGGG and die!
+            sys.exit(-1)
         return
 
 
