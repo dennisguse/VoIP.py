@@ -9,7 +9,6 @@ class DumpSettingsModule(object):
         self.dumpWave = UserDefined.dumpWave
         self.dumpCallStats = UserDefined.dumpCallStats
         self.dumpLastActiveSettings = UserDefined.dumpLastActiveSettings
-        self.pjLogLevel = UserDefined.pjLogLevel
         self.__dumpSettings = DumpSettings()
         self.implementConfiguration()
 

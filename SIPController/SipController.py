@@ -26,7 +26,6 @@ class SipController(object):
         self.pjLib = None
         self.pjCallCallBack = None
         self.currentCall = None
-        self.log_cb = None
         self.accountInfo = None
         self.transport = None
 
@@ -70,7 +69,7 @@ class SipController(object):
             if self.mediaConf is None: #MediaConfiguration
                 self.mediaConf = pjsua.MediaConfig() #TODO Make mediaconfig mandatory and handle this in class
 
-            self.pjLib.init(uaCfg, log_cfg = pj.LogConfig(level=int(self.dumpSettings.pjLogLevel), callback=PJSIPLoggingCallBack.log), media_cfg=self.mediaConf)
+            self.pjLib.init(uaCfg, log_cfg = pj.LogConfig(level=5, callback=PJSIPLoggingCallBack.log), media_cfg=self.mediaConf)
 
             if self.audioDevice.captureDevId != None and self.audioDevice.playbackDevId != None: #TODO make this via module / callback or whatever.
                 self.pjLib.set_snd_dev(self.audioDevice.captureDevId, self.audioDevice.playbackDevId)
