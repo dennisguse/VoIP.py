@@ -52,8 +52,7 @@ class CallCallBack(pj.CallCallback):
     def on_media_state(self):
         if self.call.info().media_state == pj.MediaState.ACTIVE:
             self.logger.info("Media state changed to active")
-            if self.callEst == True:
-                self.connectConfSlots()
+            self.connectConfSlots()
         else:
             self.debugMediaState()
 
@@ -80,7 +79,7 @@ class CallCallBack(pj.CallCallback):
                 self.logger.debug("Connected recorder slot:" + str(self.recorderSlot))
                 self.numberRecorderSlotsConnected = self.numberRecorderSlotsConnected + 1
             except:
-                print("Recorder not created!")
+                self.logger.warning("Recorder not created!")
 
     def disconnectConfSlots(self):
         if self.numberConfSlotsConnected > 0:
@@ -114,11 +113,5 @@ class CallCallBack(pj.CallCallback):
         else:
              self.logger.warning("Media state is unknown code: " + str(self.call.info().media_state))
 
-
-    def writeCallStats(self):
-        #StatisticWriter.writeStats(self.call.dump_status())
-        pass
-
     def getCallLevels(self):
         return self.lib.conf_get_signal_level(self.call_slot)
-
