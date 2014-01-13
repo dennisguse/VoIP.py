@@ -19,7 +19,7 @@ class SipController(object):
         """
         Initializes the sip handler.
         """
-        self.logger = logging.getLogger('SipController') #TODO
+        self.logger = logging.getLogger('SipController')
 
         self.pjAccount = None
         self.pjAccountCb = None
@@ -47,7 +47,7 @@ class SipController(object):
         return
 
     def initFromConfiguration(self):
-        self.mediaConf = MediaConfigModule.MediaConfigModule().getMediaConfig()
+        self.mediaConfig = MediaConfigModule.MediaConfigModule().getMediaConfig()
         self.networkSettings = NetworkSettingsModule.NetworkSettingsModule().getNetworkSettings()
         self.accountInfo = AccountConfigModule.AccountConfigModule().getAccountSettings()
         self.dumpSettings = DumpSettingsModule.DumpSettingsModule().getDumpSettings()
@@ -66,10 +66,10 @@ class SipController(object):
                 uaCfg.stun_host = str(self.accountInfo.stunServer)
                 self.logger.info("STUN enabled")
 
-            if self.mediaConf is None: #MediaConfiguration
-                self.mediaConf = pjsua.MediaConfig() #TODO Make mediaconfig mandatory and handle this in class
+            if self.mediaConfig is None: #MediaConfiguration
+                self.mediaConfig = pjsua.MediaConfig() #TODO Make mediaconfig mandatory and handle this in class
 
-            self.pjLib.init(uaCfg, log_cfg = pj.LogConfig(level=5, callback=PJSIPLoggingCallBack.log), media_cfg=self.mediaConf)
+            self.pjLib.init(uaCfg, log_cfg = pj.LogConfig(level=5, callback=PJSIPLoggingCallBack.log), media_cfg=self.mediaConfig)
 
             if self.audioDevice.captureDevId != None and self.audioDevice.playbackDevId != None: #TODO make this via module / callback or whatever.
                 self.pjLib.set_snd_dev(self.audioDevice.captureDevId, self.audioDevice.playbackDevId)

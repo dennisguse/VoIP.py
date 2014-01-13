@@ -6,9 +6,7 @@ Config
 
 SIP 
 * Check SIP return codes (especially if registration fails and call fails) and state the reason (at least in the console)
-
-Logging
-* Not yet there.... at least not yet useful: PJ_LOG stops working, if python logging starts: must be merged!
+* Register after audio device selection dialog (if necessary)
 
 Misc
 * CTRL-C does not work (after QT is opened)
