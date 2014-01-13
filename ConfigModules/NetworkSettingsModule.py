@@ -1,16 +1,14 @@
-class NetworkSettingsModule(object):
+import ConfigModules.NetworkSettingsConst as UserDefined
 
-    """
-    CONFIGURE HERE!
-    """
-    tcp = None
-    networkPort = None
-    ipv6 = None
-    """
-    END OF CONFIGURATION
-    """
+class NetworkSettingsModule(object):
+    '''
+    User configuration within the file NetworkSettingsConst.py
+    '''
 
     def __init__(self):
+        self.tcp = UserDefined.tcp
+        self.networkPort = UserDefined.networkPort
+        self.ipv6 = UserDefined.ipv6
         self.__networkSettings = NetworkSettings()
         self.implementConfiguration()
 

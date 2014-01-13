@@ -1,0 +1,2 @@
+captureDevId = None
+playbackDevId = None

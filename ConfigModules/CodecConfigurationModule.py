@@ -1,13 +1,14 @@
-import ConfigModules.AudioDeviceConst as UserDefined
+class CodecConfigurationModule(object):
 
-class AudioDeviceModule(object):
-    '''
-    User configuration within the file AudioDeviceConst.py
-    '''
+    """
+    CONFIGURE HERE!
+    """
+    codecs
+    """
+    END OF CONFIGURATION
+    """
 
     def __init__(self):
-        self.captureDevId = UserDefined.captureDevId
-        self.playbackDevId = UserDefined.playbackDevId
         self.__audioDev = AudioDevice()
         self.implementConfiguration()
 
@@ -21,7 +22,7 @@ class AudioDeviceModule(object):
                 setattr(self.__audioDev, member, getattr(self, member))
 
 class AudioDevice(object):
-    
+
     def __init__(self):
         self.captureDevId = None
         self.playbackDevId = None

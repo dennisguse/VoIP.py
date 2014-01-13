@@ -1,19 +1,17 @@
-class AccountConfigModule(object):
+import ConfigModules.AccountConfigConst as UserDefinded
 
-    """
-    CONFIGURE HERE!
-    """
-    sipServerAddress = "192.168.0.107"  #String
-    sipServerPort = 5060 #int
-    sipName = "10" #string
-    sipSecret = "10" #string
-    stun = None #bool
-    stunServer = None #String
-    """
-    END OF CONFIGURATION
-    """
+class AccountConfigModule(object):
+    '''
+    User configuration within the file AccountConfigConst.py
+    '''
 
     def __init__(self):
+        self.sipServerAddress = UserDefinded.sipServerAddress
+        self.sipServerPort = UserDefinded.sipServerPort
+        self.sipName = UserDefinded.sipName
+        self.sipSecret = UserDefinded.sipSecret
+        self.stun = UserDefinded.stun
+        self.stunServer = UserDefinded.stunServer
         self.__account = Account()
         self.implementConfiguration()
 
