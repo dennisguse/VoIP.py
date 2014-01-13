@@ -6,7 +6,6 @@ from ConfigModules import AccountConfigModule, AudioDeviceModule, DumpSettingsMo
 import SIPController.AccountCallBack as accountCallB
 import SIPController.CallCallBack as CallCallBack
 import SIPController.PresenceCallBack as PresenceCallBack
-import SIPController.CodecList as CodecList
 import SIPController.ControllerCallBacksHolder as ControllerCallBacksHolder
 
 

@@ -1,5 +1,4 @@
 import ConfigParser
-from SIPController.CodecList import CodecList
 import pjsua
 
 filePath = 'Settings.conf'

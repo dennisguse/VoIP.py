@@ -1,29 +1,19 @@
-class CodecConfigurationModule(object):
+import pjsua
 
-    """
-    CONFIGURE HERE!
-    """
-    codecs
-    """
-    END OF CONFIGURATION
-    """
+def applyConfiguration(pjLib):
+         pjLib.set_codec_priority("speex/16000/1", 130)
+         pjLib.set_codec_priority("speex/8000/1", 129)
 
-    def __init__(self):
-        self.__audioDev = AudioDevice()
-        self.implementConfiguration()
+         pjLib.set_codec_priority("speex/32000/1", 128)
+         pjLib.set_codec_priority("iLBC/8000/1", 128)
+         pjLib.set_codec_priority("GSM/8000/1", 128)
+         pjLib.set_codec_priority("PCMU/8000/1", 128)
+         pjLib.set_codec_priority("PCMA/8000/1", 128)
+         pjLib.set_codec_priority("G722/16000/1", 1)
 
-    def getAudioDeviceSettings(self):
-        return self.__audioDev
-
-    def implementConfiguration(self):
-        members  = [attr for attr in dir(self) if not callable(getattr(self,attr)) and not attr.startswith("__") and not attr.startswith("_")]
-        for member in members:
-            if getattr(self, member) != None:
-                setattr(self.__audioDev, member, getattr(self, member))
-
-class AudioDevice(object):
-
-    def __init__(self):
-        self.captureDevId = None
-        self.playbackDevId = None
-
+         pjLib.set_codec_priority("L16/44100/1", 1)
+         pjLib.set_codec_priority("L16/44100/2", 1)
+         pjLib.set_codec_priority("L16/16000/1", 1)
+         pjLib.set_codec_priority("L16/16000/2", 1)
+         pjLib.set_codec_priority("L16/8000/1", 1)
+         pjLib.set_codec_priority("L16/8000/2", 1)
