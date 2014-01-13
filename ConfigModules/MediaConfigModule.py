@@ -6,7 +6,7 @@ class MediaConfigModule(object):
     CONFIGURE HERE!
     """
     clock_rate = None
-    snd_clock_rate = None
+    snd_clock_rate = 44100
     snd_auto_close_time = None
     channel_count = None
     audio_frame_ptime = None
