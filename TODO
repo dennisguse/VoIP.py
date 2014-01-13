@@ -1,8 +1,6 @@
 Config
 * Remove FirstBuddy* and replace with useful impl.
-* CodecConfiguration
-* VideoCodecConfiguration
-* Coding style (inheritance)
+* Configuration via Signals.
 
 SIP 
 * Check SIP return codes (especially if registration fails and call fails) and state the reason (at least in the console)
