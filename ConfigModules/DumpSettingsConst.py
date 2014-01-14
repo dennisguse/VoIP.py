@@ -1,3 +1,3 @@
-dumpWave = None
+dumpWave = True
 dumpCallStats = None
 dumpLastActiveSettings = None

@@ -69,13 +69,15 @@ class CallCallBack(pj.CallCallback):
         self.lib.conf_connect(self.call_slot, 0)
         self.logger.debug("Connected call slot:" + str(self.call_slot))
         self.numberConfSlotsConnected = self.numberConfSlotsConnected + 1
-        if self.dumpSettings.dumpWave == True and self.callEst == True:
+        self.logger.debug("RECORDER " + str(self.dumpSettings.dumpWave) + " " + str(self.callEst))
+        if self.dumpSettings.dumpWave == True:# and self.callEst == True: 
             t = str(time.time())
-            try:   
-                self.recorderIDInc = self.lib.create_recorder("./Recorded/" + self.callId + t + '_incomming.wav')
+            #Use a a external module for recordings (the callback handler should emit a specific signal here)
+            try:
+                self.recorderIDInc = self.lib.create_recorder("./Recordings/" + self.callId + t + '_incoming.wav')
                 self.recorderSlotInc = self.lib.recorder_get_slot(self.recorderIDInc)
                 self.lib.conf_connect(self.call_slot, self.recorderSlotInc)
-                self.recorderIDOut = self.lib.create_recorder("./Recorded/" + self.callId + t + '_outgoing.wav')
+                self.recorderIDOut = self.lib.create_recorder("./Recordings/" + self.callId + t + '_outgoing.wav')
                 self.recorderSlotOut = self.lib.recorder_get_slot(self.recorderIDOut)
                 self.lib.conf_connect(0, self.recorderSlotOut)
                 self.logger.debug("Connected recorder slot:" + str(self.recorderSlotInc))
