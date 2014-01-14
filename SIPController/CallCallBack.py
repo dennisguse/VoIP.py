@@ -1,7 +1,7 @@
 import pjsua as pj
 import time
 import PyQt4.QtCore
-import logging
+import logging, traceback
 from SIPController.ControllerCallBacksHolder import ControllerCallBacksHolder
 
 class CallCallBack(pj.CallCallback):
@@ -9,9 +9,9 @@ class CallCallBack(pj.CallCallback):
     def __init__(self, dumpSettings, callClear, controllerCallBack,  call=None,  pjLib=None):
         pj.CallCallback.__init__(self, call)
         self.logger = logging.getLogger("CallCallBack")
-        self.logger.debug("Creating callcallback for call id: " + call.info().sip_call_id)
+        self.callId = str(call.info().sip_call_id)
+        self.logger.debug("Creating callcallback for call id: " + self.callId)
         self.lib = pjLib
-        self.recorderID = None
         #self.callActive = False
         self.callCanceledBeforeConnect = controllerCallBack.incomingCallCanceled
         self.dumpSettings= dumpSettings
@@ -22,7 +22,10 @@ class CallCallBack(pj.CallCallback):
         self.numberRecorderSlotsConnected = 0
         self.callEst = False
         self.call_slot = None
-        self.recorderSlot = None
+        self.recorderSlotInc = None
+        self.recorderIDInc = None
+        self.recorderSlotOut = None
+        self.recorderIDOut = None
 
 
     def on_state(self):
@@ -32,12 +35,9 @@ class CallCallBack(pj.CallCallback):
             #Should be fixed, but we have to test that!
             self.signalThread = None
             self.callEst = False
-            #if self.callActive == True:
             self.disconnectRecorder()
             self.disconnectConfSlots()
             self.logger.debug("Disconnected conf slots!")
-            #else:
-            #    self.callCanceledBeforeConnect()
             if self.userHangup == False:
                 self.callCanceledBeforeConnect()
             if self.dumpSettings.dumpCallStats:
@@ -58,7 +58,7 @@ class CallCallBack(pj.CallCallback):
 
     def connectConfSlots(self):
         self.logger.info("Connecting conf slots")
-        if self.recorderSlot:
+        if self.recorderSlotInc:
             self.logger.debug("Disconnected previous recorder")
             self.disconnectRecorder()
         if self.call_slot:
@@ -69,35 +69,45 @@ class CallCallBack(pj.CallCallback):
         self.lib.conf_connect(self.call_slot, 0)
         self.logger.debug("Connected call slot:" + str(self.call_slot))
         self.numberConfSlotsConnected = self.numberConfSlotsConnected + 1
-        if self.dumpSettings.dumpWave == True:
-            file_name = time.time()
+        if self.dumpSettings.dumpWave == True and self.callEst == True:
+            t = str(time.time())
             try:   
-                self.recorderID = self.lib.create_recorder(str(file_name) + '.wav')
-                self.recorderSlot = self.lib.recorder_get_slot(self.recorderID)
-                self.lib.conf_connect(self.call_slot, self.recorderSlot)
-                self.lib.conf_connect(self.recorderSlot, self.call_slot)
-                self.logger.debug("Connected recorder slot:" + str(self.recorderSlot))
+                self.recorderIDInc = self.lib.create_recorder("./Recorded/" + self.callId + t + '_incomming.wav')
+                self.recorderSlotInc = self.lib.recorder_get_slot(self.recorderIDInc)
+                self.lib.conf_connect(self.call_slot, self.recorderSlotInc)
+                self.recorderIDOut = self.lib.create_recorder("./Recorded/" + self.callId + t + '_outgoing.wav')
+                self.recorderSlotOut = self.lib.recorder_get_slot(self.recorderIDOut)
+                self.lib.conf_connect(0, self.recorderSlotOut)
+                self.logger.debug("Connected recorder slot:" + str(self.recorderSlotInc))
+                self.logger.debug("Connected recorder slot:" + str(self.recorderSlotOut))
                 self.numberRecorderSlotsConnected = self.numberRecorderSlotsConnected + 1
-            except:
+            except Exception, e:
                 self.logger.warning("Recorder not created!")
+                print traceback.format_exc()
 
     def disconnectConfSlots(self):
         if self.numberConfSlotsConnected > 0:
-            self.logger.info("Dis-connecting conf slots")
-            self.lib.conf_disconnect(self.call_slot, 0)
-            self.lib.conf_disconnect(0, self.call_slot)
-            self.call_slot = None
-            self.numberConfSlotsConnected = self.numberConfSlotsConnected - 1
+            try:
+                self.logger.info("Dis-connecting conf slots")
+                self.lib.conf_disconnect(self.call_slot, 0)
+                self.lib.conf_disconnect(0, self.call_slot)
+                self.call_slot = None
+                self.numberConfSlotsConnected = self.numberConfSlotsConnected - 1
+            except:
+                pass
         else:
             self.logger.error("Unable to disconnect conf slots, no conf slots connected")
 
     def disconnectRecorder(self):
         if self.numberRecorderSlotsConnected > 0:
-            self.lib.conf_disconnect(self.call_slot, self.recorderSlot)
-            self.lib.conf_disconnect(self.recorderSlot, self.call_slot)
-            self.lib.recorder_destroy(self.recorderID)
-            self.recorderID = None
-            self.recorderSlot = None
+            self.lib.conf_disconnect(self.call_slot, self.recorderSlotInc)
+            self.lib.conf_disconnect(0, self.recorderSlotOut)
+            self.lib.recorder_destroy(self.recorderIDInc)
+            self.lib.recorder_destroy(self.recorderIDOut)
+            self.recorderIDInc = None
+            self.recorderSlotInc = None
+            self.recorderIDOut = None
+            self.recorderSlotOut = None
             self.numberRecorderSlotsConnected = self.numberRecorderSlotsConnected - 1
 
 
