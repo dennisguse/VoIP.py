@@ -16,6 +16,7 @@ CALL_RETRY_VIDEO = 'retryVideo'
 
 #Presence Signals
 BUDDY_STATE_CHANGED = 'buddyStateChanged'
+OWN_ONLINE_STATE_CHANGED = 'ownOnlineStateChanged'
 
 #Modules Signals
 MODULE_LOAD = 'loadmod'

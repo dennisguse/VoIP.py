@@ -9,9 +9,9 @@ from Defines import SIGNALS
 from PyQt4.QtCore import SIGNAL
 from Defines.MODULES import MODULES
 from Modules.UIModules import ImagePlayer
-from Modules.ConfigModules.ConfigReaderModule import readFirstBuddyNumber
 import Modules.UIModules.RESOURCES as UIResources
 import Modules.MainUIModules.RESOURCES as MainUIResources
+from ConfigModules import BuddyConfigModule
 
 
 class SimpleUI(AbstractUIModule,  QtGui.QWidget):
@@ -26,7 +26,8 @@ class SimpleUI(AbstractUIModule,  QtGui.QWidget):
         self.move(QtGui.QApplication.desktop().screen().rect().center()- self.rect().center()) #Move window to center
         self.connectButtons()
         self.connectSignals()
-        self.numberToCall = readFirstBuddyNumber()
+        self.numberToCall = BuddyConfigModule.BuddyConfigModule().getBuddys()[0].number
+        self.__ui.cbOwnStatus.currentIndexChanged.connect(self.onManuallyStatusChange)
         
     def registerNewModules(self):        
         for module in self.MODULES_TO_LOAD:
@@ -109,10 +110,34 @@ class SimpleUI(AbstractUIModule,  QtGui.QWidget):
         self.__ui.btn.setText("Anrufen")
         self.__ui.btn.clicked.disconnect()
         self.__ui.btn.clicked.connect(self.btnStartCall)
+        self.disableCallButton()
+
+    def disableCallButton(self):
+        self.__ui.btn.setEnabled(False)
+        self.timer = AsyncTimer()
+        self.connect( self.timer, SIGNAL("TIMER_END"), self.enableCallButton )
+        self.timer.start()
+
+    def enableCallButton(self):
+        self.__ui.btn.setEnabled(True)
+
+    def onManuallyStatusChange(self, status):
+        if status == 1:
+            SIGNALS.emit(self, SIGNALS.OWN_ONLINE_STATE_CHANGED, False)
+        else:
+            SIGNALS.emit(self, SIGNALS.OWN_ONLINE_STATE_CHANGED, True)
 
     def showWindow(self):   
         self.__ui.show()
         logging.info("Stupid UI is up and running")
         self.emit(SIGNAL(SIGNALS.REGISTER_REQUEST_INITIAL_STATE))
 
+class AsyncTimer(QThread):
 
+    def __init__(self, timeToSleep=2):
+        QThread.__init__(self)
+        self.timeToSleep = timeToSleep
+
+    def run(self):
+        time.sleep(self.timeToSleep)
+        self.emit(SIGNAL("TIMER_END"))

@@ -17,7 +17,7 @@ import Modules.MainUIModules.RESOURCES as MainUIResources
 class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
     
     MODULES_TO_LOAD = ['ErrorDialog',  'WaveRecordModule',  'RingToneModule', 'SingleBuddyModule',
-                       'VideoPreviewModule', 'VideoCallModule', 'DeviceChooserModule']
+                       'VideoPreviewModule', 'VideoCallModule', 'DeviceChooserModuleSimple']
     
     def __init__(self, signalSource, parent=None):
         QtGui.QWidget.__init__(self, parent)   
@@ -28,7 +28,7 @@ class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
         self.numberToCall = readFirstBuddyNumber()
         self.signalLevelThread = None
         self.disableSignalLevelBars()
-        self.__ui.cbPreview.stateChanged.connect(self.onVideoPreviewToggled)
+        self.__ui.cbOwnStatus.currentIndexChanged.connect(self.onManuallyStatusChange)
         
     def registerNewModules(self):        
         for module in self.MODULES_TO_LOAD:
@@ -36,7 +36,6 @@ class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
         self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE),  'WaveRecordModule')
         self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE),  'DeviceChooserModule')
         self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE),  'SingleBuddyModule')
-
 
     def connectButtons(self):
         pass #is done on demand
@@ -120,7 +119,7 @@ class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
         self.__ui.cbPreview.setCheckable(False)
         self.__ui.btn.clicked.disconnect()        
         self.__ui.btn.clicked.connect(self.btnHangup)
-    
+
     def btnHangup(self):
         SIGNALS.emit(self, SIGNALS.CALL_HANGUP)
         self.emit(SIGNAL(SIGNALS.MODULE_DISMISS), 'VideoCallModule')
@@ -128,27 +127,31 @@ class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
         self.__ui.btn.setText("Anrufen")
         self.__ui.btn.clicked.disconnect()
         self.__ui.btn.clicked.connect(self.btnStartCall)
+        self.disableCallButton()
 
-    def butPresenceClicked(self):
-        pass
+    def disableCallButton(self):
+        self.__ui.btn.setEnabled(False)
+        self.timer = AsyncTimer()
+        self.connect( self.timer, SIGNAL("TIMER_END"), self.enableCallButton )
+        self.timer.start()
+
+    def enableCallButton(self):
+        self.__ui.btn.setEnabled(True)
+
+
 
     def showCallVideo(self, winID):
         self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE), 'VideoCallModule', self.__ui, winID)
 
     def showWindow(self):   
         self.__ui.show()
-        logging.info("Stupid UI is up and running")
+        logging.info("Simple Video UI is up and running")
         self.emit(SIGNAL(SIGNALS.REGISTER_REQUEST_INITIAL_STATE))
+        self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE), 'VideoPreviewModule', self.__ui)
 
     def showSignalLevel(self, level):
         self.__ui.pbTx.setValue(int(level[0] * 100))
         self.__ui.pbRx.setValue(int(level[1] * 100))
-
-    def onVideoPreviewToggled(self):
-        if self.__ui.cbPreview.isChecked():
-            self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE), 'VideoPreviewModule', self.__ui)
-        else:
-            self.emit(SIGNAL(SIGNALS.MODULE_DISMISS), 'VideoPreviewModule')
 
     def requestSignalUpdate(self):
         self.emit(SIGNAL(SIGNALS.CALL_SIGNAL_LEVEL_REQUEST))
@@ -164,12 +167,17 @@ class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
         self.__ui.pbTx.setValue(0)
         self.__ui.pbRx.setDisabled(True)
         self.__ui.pbTx.setDisabled(True)
-        self.__ui.cbPreview.setCheckable(True)
         try:
             self.signalLevelThread.stop()
             self.signalLevelThread = None
         except:
             pass
+
+    def onManuallyStatusChange(self, status):
+        if status == 1:
+            SIGNALS.emit(self, SIGNALS.OWN_ONLINE_STATE_CHANGED, False)
+        else:
+            SIGNALS.emit(self, SIGNALS.OWN_ONLINE_STATE_CHANGED, True)
 
 class SignalLevelThread(QThread):
 
@@ -185,3 +193,13 @@ class SignalLevelThread(QThread):
 
     def stop(self):
         self.requestStop = True
+
+class AsyncTimer(QThread):
+
+    def __init__(self, timeToSleep=2):
+        QThread.__init__(self)
+        self.timeToSleep = timeToSleep
+
+    def run(self):
+        time.sleep(self.timeToSleep)
+        self.emit(SIGNAL("TIMER_END"))

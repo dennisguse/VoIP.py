@@ -20,7 +20,7 @@ class AccountCallBack(pj.AccountCallback):
     def on_reg_state(self):
         if self.connectRegStateCallback != None:
             self.connectRegStateCallback()
-    
+
     def wait(self):
         self.sem = threading.Semaphore(0)
         self.sem.acquire()

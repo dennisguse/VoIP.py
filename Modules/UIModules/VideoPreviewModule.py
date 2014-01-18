@@ -17,12 +17,23 @@ class VideoPreviewModule(AbstractModule):
         return None
 
     def start(self, parent):
-        self.widget = QDialog(parent)
-        self.widget.resize(350,320)
-        self.widget.setWindowTitle("Video Preview Window")
-        self.widget.show()
+        #self.widget = QDialog(parent)
+        #self.widget.resize(350,320)
+        #self.widget.setWindowTitle("Video Preview Window")
+        #self.widget.show()
+        #self.widget = QWidget(parent)
+        #p = self.widget.palette()
+        #p.setColor(self.widget.backgroundRole(), Qt.red)
+        #self.widget.setPalette(p)
+        #self.widget.resize(350,320)
+        #parent.layVid.addWidget(self.widget)
+        #self.widget.show()
+
+        self.widget = parent.widget
+
         self.lib = pj.Lib.instance()
-        previewWinID = self.lib.show_video_preview(self.settings.captureDevice, self.settings.renderDevice)
+        print (self.widget.winId())
+        previewWinID = self.lib.start_video_preview(self.settings.captureDevice, self.settings.renderDevice)
         self.reparentWindow(previewWinID)
 
     def dismiss(self):
@@ -40,7 +51,9 @@ class VideoPreviewModule(AbstractModule):
         if win:
             win.map()
             win.raise_window()
+            print (self.widget.winId())
             win.reparent(self.widget.winId(), 0, 0)
+            #win.reparent(self.winId, 0, 0)
             print(win.get_wm_name())
             win.raise_window()
             win.set_wm_normal_hints(flags=(Xutil.PPosition | Xutil.PSize | Xutil.PMinSize),min_width=50,min_height=50)

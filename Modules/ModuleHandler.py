@@ -47,7 +47,7 @@ class ModuleHandler(object):
     def activateModule(self,  moduleName,  optionalParamenter = None, optionalParameter2 = None):
         self.logger.debug("Activate Module " + moduleName)
         if self.checkModuleExists(moduleName):
-            if optionalParamenter and not optionalParameter2:
+            if optionalParamenter != None and not optionalParameter2:
                 self.objects[moduleName].start(optionalParamenter)
             elif optionalParamenter and  optionalParameter2:
                 self.objects[moduleName].start(optionalParamenter, optionalParameter2)

@@ -19,7 +19,6 @@ class SipController(object):
         Initializes the sip handler.
         """
         self.logger = logging.getLogger('SipController')
-
         self.pjAccount = None
         self.pjAccountCb = None
         self.pjLib = None
@@ -27,16 +26,12 @@ class SipController(object):
         self.currentCall = None
         self.accountInfo = None
         self.transport = None
-
         self.recordWav = 0
         self.accountBuddys = None
-
         if controllerCallBack:
             self.controllerCallBack = controllerCallBack
         else:
             self.controllerCallBack = ControllerCallBacksHolder()
-
-
         self.initFromConfiguration()
         self.initLib()
         self.registerClient()
@@ -129,7 +124,7 @@ class SipController(object):
                 self.addBuddy(buddy.buddyURI,  buddy.changeOnlineStatus)
 
     def addBuddy(self,  buddyURI,  buddyOnStateChange = None):
-        buddy = self.pjAccount.add_buddy(buddyURI,  PresenceCallBack.PresenceCallBack(None,  buddyOnStateChange))
+        buddy = self.pjAccount.add_buddy(buddyURI,  PresenceCallBack.PresenceCallBack(None, buddyOnStateChange))
         buddy.subscribe()
 
     def initTransport(self):
@@ -216,8 +211,11 @@ class SipController(object):
         self.currentCall = None
         self.currentCallCallback = None
 
-    def setPresenceStatus(self, is_online, activity="", pres_text="", rpid_id=""):
+    def setPresenceStatus(self, is_online, activity=0, pres_text="", rpid_id=""):
         self.pjAccount.set_presence_status(is_online,  activity,  pres_text,  rpid_id)
+
+    def setBasicPresenceStatus(self, is_online):
+        self.pjAccount.set_basic_status(is_online)
 
     def getRegState(self): #TODO Refactor to getRegistrationState
         """

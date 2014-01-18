@@ -2,7 +2,7 @@ import logging
 from Modules.AbstractModule import AbstractModule
 from Modules.SignalHandler import SignalHandler
 from PyQt4.QtCore import *
-from Modules.ConfigModules.ConfigReaderModule import readFirstBuddyURI
+from ConfigModules import BuddyConfigModule
 from Defines import SIGNALS
 
 class SingleBuddyModule(QObject,AbstractModule):
@@ -15,7 +15,7 @@ class SingleBuddyModule(QObject,AbstractModule):
         if optionalParameter:
             self.buddyURI = optionalParamter
         else:
-            self.buddyURI = readFirstBuddyURI()
+            self.buddyURI = BuddyConfigModule.BuddyConfigModule().getBuddys()[0].buddyUri
         if self.buddyURI:
             self.logger.info("Starting to track buddy with URI " + self.buddyURI)
             SignalHandler.getInstance().sipController.addBuddy(self.buddyURI, self.onBuddyStateChanged)

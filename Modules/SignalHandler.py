@@ -46,6 +46,7 @@ class SignalHandler(QObject):
         self.connect(self.signalSource, SIGNAL(SIGNALS.CALL_HANGUP), self.onHangupCallSignal)
         self.connect(self.signalSource, SIGNAL(SIGNALS.REGISTER_REQUEST_INITIAL_STATE), self.sipController.onRegStateChanged)
         self.connect(self.signalSource, SIGNAL(SIGNALS.CALL_SIGNAL_LEVEL_REQUEST), self.onSignalLevelChangeRequest)
+        self.connect(self.signalSource, SIGNAL(SIGNALS.OWN_ONLINE_STATE_CHANGED), self.onOwnOnlineStatusChange)
 
     def registerNewSignal(self, signalSource, signalName, signalCallBack = None, internalMethodToCall = None):
         self.logger.debug("Register new signal: " + str(signalSource) + ":" + signalName)
@@ -67,7 +68,7 @@ class SignalHandler(QObject):
             self.logger.error("Unable to free lib: " + str(ex))
         return
 
-    def onCallSignal(self,  numberToCall):
+    def onCallSignal(self, numberToCall):
         self.logger.info("Calling number: " + numberToCall)
         try:
             self.sipController.callNumber(numberToCall)
@@ -95,6 +96,13 @@ class SignalHandler(QObject):
         except:
             ex = sys.exc_info()[0]
             self.logger.error("Unable to hangup call")
+
+    def onOwnOnlineStatusChange(self, isOnline=False):
+        if isOnline:
+            self.logger.info("Setting own online status to online")
+        else:
+            self.logger.info("Settting own online status to offline")
+        self.sipController.setPresenceStatus(isOnline)
 
     ####################################
     #     Outgoing signal section      #
