@@ -41,6 +41,7 @@ class ModuleHandler(object):
             if self.objects[moduleName].hasSignalsToRegister() == True:
                 for signal in self.objects[moduleName].getSignals():
                     self.signalHandler.registerNewSignal(self.objects[moduleName],  signal[0],  signal[1],  signal[2])
+
         else:
             self.logger.warning("Module " + moduleName + " has already been loaded!")
 

@@ -15,6 +15,7 @@ import logging
 
 logger = logging.getLogger("PJSIP")
 def log(level,message,length):
+    return
     if level <= 10:
         logger.debug(message)
     elif level <= 20:

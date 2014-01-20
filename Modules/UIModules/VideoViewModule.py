@@ -1,14 +1,14 @@
 from PyQt4.QtGui import *
 from Modules.AbstractModule import AbstractModule
 import Xlib
-import pjsua as pj
 import logging
 
 from SIPController.VideoSettings import VideoSettings
 
-class VideoPreviewModule(AbstractModule):
+
+class VideoViewModule(AbstractModule):
     def __init__(self, parent = None):
-        self.logger = logging.getLogger("VideoShowModule")
+        self.logger = logging.getLogger("VideoViewModule")
         self.settings = VideoSettings()
         self.widget = None;
 
@@ -18,21 +18,13 @@ class VideoPreviewModule(AbstractModule):
     def getSignals(self):
         return None
 
-    def start(self, parentWindow, parentUI):
-        if (self.widget != None):
-            self.logger.error("Cannot re-use VideoShowModule.")
-            return
+    def showVideoPane(self, parentWindow, parentContainer, windowId):
+        if self.widget is not None:  # We need to create the widget as this is the first call.
+            self.widget = QX11EmbedContainerAspect(parentWindow)
+            parentContainer.addWidget(self.widget)
+        self.reparentWindow(windowId)
 
-        self.widget = QX11EmbedContainerAspect(parentWindow)
-        parentUI.addWidget(self.widget)
-
-        self.lib = pj.Lib.instance()
-        previewWinID = self.lib.start_video_preview(self.settings.captureDevice, self.settings.renderDevice)
-        self.reparentWindow(previewWinID)
-
-    def dismiss(self):
-        self.lib = pj.Lib.instance()
-        self.lib.stop_video_preview()
+    def dismissVideoPane(self):
         try:
             self.widget.close()
             self.widget.destroy()
@@ -48,7 +40,7 @@ class VideoPreviewModule(AbstractModule):
             win.reparent(self.widget.winId(), 0, 0)
             win.get_wm_name() #For unknown reason is this required!
         else:
-            self.logger.error("Could not reparent window.")
+            self.logger.error("Could not re-parent window.")
 
     def getWin(self, winId):
         display = Xlib.display.Display()

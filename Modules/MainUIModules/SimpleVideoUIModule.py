@@ -2,14 +2,12 @@ import logging
 import time
 
 from Modules.MainUIModules.AbstractUIModule import AbstractUIModule
-from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from PyQt4 import uic, QtGui
 from Defines import SIGNALS
 from PyQt4.QtCore import SIGNAL
 from Defines.MODULES import MODULES
 from Modules.UIModules import ImagePlayer
-from Modules.ConfigModules.ConfigReaderModule import readFirstBuddyNumber
 import Modules.UIModules.RESOURCES as UIResources
 import Modules.MainUIModules.RESOURCES as MainUIResources
 from ConfigModules import BuddyConfigModule
@@ -17,10 +15,11 @@ from ConfigModules import BuddyConfigModule
 class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
     
     MODULES_TO_LOAD = ['ErrorDialog',  'WaveRecordModule',  'RingToneModule', 'SingleBuddyModule',
-                       'VideoPreviewModule', 'VideoCallModule', 'DeviceChooserModuleSimple']
+                       'VideoIncomingModule', 'VideoOutgoingModule', 'DeviceChooserModuleSimple']
     
     def __init__(self, signalSource, parent=None):
-        QtGui.QWidget.__init__(self, parent)   
+        QtGui.QWidget.__init__(self, parent)
+        self.logger = logging.getLogger("SimpleVideoUI")
         self.signalSource = signalSource
         self.__ui = uic.loadUi(MainUIResources.RESCOURCES_MAINUI["SimpleVideo"], self)
         self.connectButtons()
@@ -142,13 +141,13 @@ class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
 
 
     def showCallVideo(self, winID):
-        self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE), 'VideoCallModule', [winID, self, self.__ui.videoIncoming])
+        self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE), 'VideoIncomingModule', {"WindowId": winID, "parentWindow": self, "parentContainer": self.__ui.videoIncoming})
 
     def showWindow(self):   
         self.__ui.show()
-        logging.info("Simple Video UI is up and running")
+        self.logger.info("Simple Video UI is up and running")
         self.emit(SIGNAL(SIGNALS.REGISTER_REQUEST_INITIAL_STATE))
-        self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE), 'VideoPreviewModule', self, self.__ui.videoOutgoing)
+        self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE), 'VideoOutgoingModule', {"parentWindow": self, "parentContainer": self.__ui.videoOutgoing})
 
     def showSignalLevel(self, level):
         self.__ui.pbTx.setValue(int(level[0] * 100))

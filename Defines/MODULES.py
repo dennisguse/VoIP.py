@@ -12,8 +12,8 @@ class MODULES(object):
     RingToneModule = './Modules/CallModules/RingToneModule.py',  \
     WaveRecordModule = './Modules/CallModules/WaveRecordModule.py', \
     SingleBuddyModule = './Modules/PresenceModules/SingleBuddyModule.py', \
-    VideoPreviewModule = './Modules/UIModules/VideoPreviewModule.py', \
     DeviceChooserModule = './Modules/UIModules/DeviceChooserModule.py', \
     DeviceChooserModuleSimple = './Modules/UIModules/DeviceChooserModuleSimple.py', \
-    VideoCallModule = './Modules/UIModules/VideoCallModule.py'
+    VideoIncomingModule = './Modules/UIModules/VideoIncomingModule.py', \
+    VideoOutgoingModule = './Modules/UIModules/VideoOutgoingModule.py'
     )
