@@ -52,7 +52,7 @@ class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
     
     def onIncomingCall(self,  incomingCallerNumber):
         try:
-            self.emit(SIGNAL(SIGNALS.MODULE_DISMISS), 'VideoPreviewModule')
+            #self.emit(SIGNAL(SIGNALS.MODULE_DISMISS), 'VideoPreviewModule')
             pass
         except:
             pass
@@ -104,7 +104,7 @@ class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
 
     def btnStartCall(self):
         try:
-            self.emit(SIGNAL(SIGNALS.MODULE_DISMISS), 'VideoPreviewModule')
+            #self.emit(SIGNAL(SIGNALS.MODULE_DISMISS), 'VideoPreviewModule')
             pass
         except:
             pass
