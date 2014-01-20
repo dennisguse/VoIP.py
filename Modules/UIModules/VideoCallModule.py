@@ -52,8 +52,8 @@ class VideoCallModule(AbstractModule):
                 win.reparent(self.widget.winId(), 0, 0)
                 print(win.get_wm_name())
                 win.raise_window()
-                win.set_wm_normal_hints(flags=(Xutil.PPosition | Xutil.PSize | Xutil.PMinSize),min_width=50,min_height=50)
-                #hints = win.get_wm_normal_hints()
+#                win.set_wm_normal_hints(flags=(Xutil.PPosition | Xutil.PSize | Xutil.PMinSize),min_width=50,min_height=50)
+                hints = win.get_wm_normal_hints()
             else:
                 print("Not successful reparented window")
                 #self.reparentWindow(windId)

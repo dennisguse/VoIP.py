@@ -1,14 +1,16 @@
 from PyQt4.QtGui import *
-from PyQt4.QtCore import *
 from Modules.AbstractModule import AbstractModule
-from Xlib import X, display, Xutil
 import Xlib
 import pjsua as pj
+import logging
+
 from SIPController.VideoSettings import VideoSettings
 
-class VideoPreviewModule(AbstractModule): #TODO QX11EmbedContainer inherit from.
+class VideoPreviewModule(AbstractModule):
     def __init__(self, parent = None):
+        self.logger = logging.getLogger("VideoShowModule")
         self.settings = VideoSettings()
+        self.widget = None;
 
     def hasSignalsToRegister(self):
         return False
@@ -17,7 +19,11 @@ class VideoPreviewModule(AbstractModule): #TODO QX11EmbedContainer inherit from.
         return None
 
     def start(self, parentWindow, parentUI):
-        self.widget = QX11EmbedContainer(parentWindow)
+        if (self.widget != None):
+            self.logger.error("Cannot re-use VideoShowModule.")
+            return
+
+        self.widget = QX11EmbedContainerAspect(parentWindow)
         parentUI.addWidget(self.widget)
 
         self.lib = pj.Lib.instance()
@@ -39,15 +45,10 @@ class VideoPreviewModule(AbstractModule): #TODO QX11EmbedContainer inherit from.
         if win:
             win.map()
             win.raise_window()
-            print (self.widget.winId())
             win.reparent(self.widget.winId(), 0, 0)
-            #win.reparent(self.winId, 0, 0)
-            print(win.get_wm_name())
-            win.raise_window()
-            win.set_wm_normal_hints(flags=(Xutil.PPosition | Xutil.PSize | Xutil.PMinSize),min_width=50,min_height=50)
-            hints = win.get_wm_normal_hints()
+            win.get_wm_name() #For unknown reason is this required!
         else:
-            print("Not successful")
+            self.logger.error("Could not reparent window.")
 
     def getWin(self, winId):
         display = Xlib.display.Display()
@@ -61,3 +62,16 @@ class VideoPreviewModule(AbstractModule): #TODO QX11EmbedContainer inherit from.
             if win_children != None:
                 winList += win_children
         return None
+
+class QX11EmbedContainerAspect(QX11EmbedContainer):
+    def _init__(self, parent=None):
+        QX11EmbedContainer.__init__(self, parent)
+        policy = QSizePolicy(QSizePolicy.Preferred, QSizePolicy.Preferred)
+        policy.setHeightForWidth(True)
+        policy.setWidthForHeight(True)
+
+        self.setSizePolicy(policy)
+
+    def heightForWidth(self, height):
+        print("BLA2")
+        return height;
