@@ -30,7 +30,7 @@ class VideoCallModule(AbstractModule):
 
 
     def initWin(self, parentWindow, parentUI):
-        self.widget = QX11EmbedContainer(parentWindow)x
+        self.widget = QX11EmbedContainer(parentWindow)
         parentUI.addWidget(self.widget)
         #self.widget.resizeEvent.connect(self.resizeEvent)
 
