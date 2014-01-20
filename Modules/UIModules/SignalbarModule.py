@@ -2,6 +2,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from Modules.AbstractModule import AbstractModule
 from Defines import SIGNALS
+import time, sys
 
 class SignalbarModule(QObject, AbstractModule):
 
@@ -17,17 +18,18 @@ class SignalbarModule(QObject, AbstractModule):
         return [[SIGNALS.CALL_SIGNAL_LEVEL_REQUEST,  None,  'onSignalLevelChangeRequest']]
 
     def start(self, parameters):
-        try:
-            if self.txBar == None:
-                self.txBar = QProgressBar(parameters["parent"])
-                self.rxBar = QProgressBar(parameters["parent"])
-                parameters["parentLayout"].addWidget(self.txBar)
-                parameters["parentLayout"].addWidget(self.rxBar)
-                self.connect(parameters["signalSource"], SIGNAL(SIGNALS.CALL_SIGNAL_LEVEL_CHANGE), self.showSignalLevel)
-                self.signalLevelThread = SignalLevelThread(self.requestSignalUpdate)
-                self.signalLevelThread.start()
-        except:
-            pass #TODO ERROR
+
+        if self.txBar == None:
+            hbox = QHBoxLayout(parameters["parent"])
+            self.txBar = QProgressBar(parameters["parent"])
+            self.rxBar = QProgressBar(parameters["parent"])
+            hbox.addWidget(self.txBar)
+            hbox.addWidget(self.rxBar)
+            parameters["parentLayout"].addLayout(hbox,0,0)
+            self.connect(parameters["signalSource"], SIGNAL(SIGNALS.CALL_SIGNAL_LEVEL_CHANGE), self.showSignalLevel)
+            self.signalLevelThread = SignalLevelThread(self.requestSignalUpdate)
+            self.signalLevelThread.start()
+
 
 
     def dismiss(self):
@@ -35,8 +37,8 @@ class SignalbarModule(QObject, AbstractModule):
         self.signalLevelThread = None
 
     def showSignalLevel(self, level):
-        self.txbar.setValue(int(level[0] * 100))
-        self.rxBar.pbRx.setValue(int(level[1] * 100))
+        self.txBar.setValue(int(level[0] * 100))
+        self.rxBar.setValue(int(level[1] * 100))
 
     def requestSignalUpdate(self):
         self.emit(SIGNAL(SIGNALS.CALL_SIGNAL_LEVEL_REQUEST))
