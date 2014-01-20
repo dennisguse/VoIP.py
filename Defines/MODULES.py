@@ -15,5 +15,7 @@ class MODULES(object):
     VideoPreviewModule = './Modules/UIModules/VideoPreviewModule.py', \
     DeviceChooserModule = './Modules/UIModules/DeviceChooserModule.py', \
     DeviceChooserModuleSimple = './Modules/UIModules/DeviceChooserModuleSimple.py', \
+    SignalbarModule = './Modules/UIModules/SignalbarModule.py', \
     VideoCallModule = './Modules/UIModules/VideoCallModule.py'
+
     )
