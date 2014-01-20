@@ -1,13 +1,12 @@
+import logging
+import Xlib.display
+
 from PyQt4.QtGui import *
 from Modules.AbstractModule import AbstractModule
-import Xlib
-import logging
-
 from SIPController.VideoSettings import VideoSettings
 
-
 class VideoViewModule(AbstractModule):
-    def __init__(self, parent = None):
+    def __init__(self):
         self.logger = logging.getLogger("VideoViewModule")
         self.settings = VideoSettings()
         self.widget = None;
@@ -19,7 +18,7 @@ class VideoViewModule(AbstractModule):
         return None
 
     def showVideoPane(self, parentWindow, parentContainer, windowId):
-        if self.widget is not None:  # We need to create the widget as this is the first call.
+        if self.widget is None:  # We need to create the widget as this is the first call.
             self.widget = QX11EmbedContainerAspect(parentWindow)
             parentContainer.addWidget(self.widget)
         self.reparentWindow(windowId)
@@ -38,7 +37,7 @@ class VideoViewModule(AbstractModule):
             win.map()
             win.raise_window()
             win.reparent(self.widget.winId(), 0, 0)
-            win.get_wm_name() #For unknown reason is this required!
+            win.get_wm_name()  # For unknown reason is this required!
         else:
             self.logger.error("Could not re-parent window.")
 

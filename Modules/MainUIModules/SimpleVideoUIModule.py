@@ -141,7 +141,7 @@ class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
 
 
     def showCallVideo(self, winID):
-        self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE), 'VideoIncomingModule', {"WindowId": winID, "parentWindow": self, "parentContainer": self.__ui.videoIncoming})
+        self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE), 'VideoIncomingModule', {"windowId": winID, "parentWindow": self, "parentContainer": self.__ui.videoIncoming})
 
     def showWindow(self):   
         self.__ui.show()
