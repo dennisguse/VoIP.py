@@ -136,8 +136,9 @@ class SignalHandler(QObject):
         self.logger.info("Call established")
         self.emit(SIGNAL(SIGNALS.CALL_ESTABLISHED))
         #Video? TODO Document
-        #if self.sipController.currentCall.info().vid_cnt != 0:
-        #    self.emit(SIGNAL(SIGNALS.CALL_SHOW_VIDEO), self.sipController.getCurrentCallVideoStream())
+        test = self.sipController.currentCall.info().vid_cnt
+        #if self.sipController.currentCall.info().vid_cnt != 0: #TODO CHECK WHY 0
+        self.emit(SIGNAL(SIGNALS.CALL_SHOW_VIDEO), self.sipController.getCurrentCallVideoStream())
 
     def onSignalLevelChangeRequest(self):
         if self.sipController.currentCallCallback:

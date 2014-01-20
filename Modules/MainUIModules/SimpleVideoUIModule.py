@@ -12,7 +12,7 @@ from Modules.UIModules import ImagePlayer
 from Modules.ConfigModules.ConfigReaderModule import readFirstBuddyNumber
 import Modules.UIModules.RESOURCES as UIResources
 import Modules.MainUIModules.RESOURCES as MainUIResources
-
+from ConfigModules import BuddyConfigModule
 
 class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
     
@@ -25,7 +25,7 @@ class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
         self.__ui = uic.loadUi(MainUIResources.RESCOURCES_MAINUI["SimpleVideo"], self)
         self.connectButtons()
         self.connectSignals()
-        self.numberToCall = readFirstBuddyNumber()
+        self.numberToCall = BuddyConfigModule.BuddyConfigModule().getBuddys()[0].number
         self.signalLevelThread = None
         self.disableSignalLevelBars()
         self.__ui.cbOwnStatus.currentIndexChanged.connect(self.onManuallyStatusChange)
@@ -53,6 +53,7 @@ class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
     def onIncomingCall(self,  incomingCallerNumber):
         try:
             self.emit(SIGNAL(SIGNALS.MODULE_DISMISS), 'VideoPreviewModule')
+            pass
         except:
             pass
         logging.info("Got incoming call from: " + incomingCallerNumber)
@@ -104,11 +105,11 @@ class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
     def btnStartCall(self):
         try:
             self.emit(SIGNAL(SIGNALS.MODULE_DISMISS), 'VideoPreviewModule')
+            pass
         except:
             pass
         SIGNALS.emit(self, SIGNALS.CALL_NUMBER, self.numberToCall)
         self.__ui.btn.setText("Auflegen")
-        self.__ui.cbPreview.setCheckable(False)
         self.__ui.btn.clicked.disconnect()
         self.__ui.btn.clicked.connect(self.btnHangup)
         
@@ -141,7 +142,7 @@ class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
 
 
     def showCallVideo(self, winID):
-        self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE), 'VideoCallModule', self.__ui, winID)
+        self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE), 'VideoCallModule', [winID, self, self.__ui.videoIncoming])
 
     def showWindow(self):   
         self.__ui.show()

@@ -1,7 +1,9 @@
 from PyQt4.QtGui import QDialog as QDialog
+from PyQt4.QtGui import *
+from PyQt4.QtCore import *
 from Modules.AbstractModule import AbstractModule
 from Xlib import X, display, Xutil
-import Xlib, time
+import Xlib
 import pjsua as pj
 from SIPController.VideoSettings import VideoSettings
 
@@ -18,21 +20,16 @@ class VideoCallModule(AbstractModule):
     def getSignals(self):
         return None
 
-    def start(self, parent, winID):
-        print("GIVEN WIN ID = " + str(winID))
-        print("in hex " +str(hex(winID)))
+    def start(self, parameters):
         if not self.widget:
-            self.initWin()
-            self.widget.show()
+            self.initWin(parameters[1], parameters[2])
             print(self.widget.winId())
-        self.reparentWindow(winID)
+        self.reparentWindow(parameters[0])
 
 
-    def initWin(self):
-        self.widget = QDialog(self.parent)
-        self.widget.resize(350,320)
-        self.widget.setWindowTitle("Video Call Window")
-        print("Showing call window")
+    def initWin(self, parentWindow, parentUI):
+        self.widget = QX11EmbedContainer(parentWindow)
+        parentUI.addWidget(self.widget)
 
     def dismiss(self):
         try:
@@ -58,8 +55,7 @@ class VideoCallModule(AbstractModule):
                 print("Not successfull reparented window")
                 #self.reparentWindow(windId)
         except:
-            print("Bullshit")
-            #self.reparentWindow(winId)
+            pass
 
     def getWin(self, winId):
         display = Xlib.display.Display()
