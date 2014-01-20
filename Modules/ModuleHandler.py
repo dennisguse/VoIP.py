@@ -44,12 +44,12 @@ class ModuleHandler(object):
         else:
             self.logger.warning("Module " + moduleName + " has already been loaded!")
 
-    def activateModule(self,  moduleName,  optionalParamenter = None, optionalParameter2 = None):
+    def activateModule(self,  moduleName,  optionalParamenter = None, optionalParameter2 = None): #TODO Array for optional parameters?
         self.logger.debug("Activate Module " + moduleName)
         if self.checkModuleExists(moduleName):
-            if optionalParamenter != None and not optionalParameter2:
+            if optionalParamenter != None and optionalParameter2 == None:
                 self.objects[moduleName].start(optionalParamenter)
-            elif optionalParamenter and  optionalParameter2:
+            elif optionalParamenter != None and  optionalParameter2 != None:
                 self.objects[moduleName].start(optionalParamenter, optionalParameter2)
             else:
                 self.objects[moduleName].start()

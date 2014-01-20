@@ -6,7 +6,7 @@ import Xlib
 import pjsua as pj
 from SIPController.VideoSettings import VideoSettings
 
-class VideoPreviewModule(AbstractModule):
+class VideoPreviewModule(AbstractModule): #TODO QX11EmbedContainer inherit from.
     def __init__(self, parent = None):
         self.settings = VideoSettings()
 
@@ -16,13 +16,9 @@ class VideoPreviewModule(AbstractModule):
     def getSignals(self):
         return None
 
-    def start(self, parent):
-        #self.widget = QDialog(parent)
-        #self.widget.resize(500,500)
-        #self.widget.show()
-
-        self.widget = QX11EmbedContainer(parent)
-        parent.videoPreview.addWidget(self.widget)
+    def start(self, parentWindow, parentUI):
+        self.widget = QX11EmbedContainer(parentWindow)
+        parentUI.addWidget(self.widget)
 
         self.lib = pj.Lib.instance()
         previewWinID = self.lib.start_video_preview(self.settings.captureDevice, self.settings.renderDevice)

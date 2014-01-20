@@ -8,6 +8,7 @@ SIP
 
 Misc
 * CTRL-C does not work (after QT is opened)
+* No references on pjlib.lib(); it might change if the SIPController reloads.
 
 Ringtone
 * Generate ringtone on ringing! (SIP:180)

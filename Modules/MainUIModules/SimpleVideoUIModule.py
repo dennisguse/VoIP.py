@@ -147,7 +147,7 @@ class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
         self.__ui.show()
         logging.info("Simple Video UI is up and running")
         self.emit(SIGNAL(SIGNALS.REGISTER_REQUEST_INITIAL_STATE))
-        self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE), 'VideoPreviewModule', self.__ui)
+        self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE), 'VideoPreviewModule', self, self.__ui.videoOutgoing)
 
     def showSignalLevel(self, level):
         self.__ui.pbTx.setValue(int(level[0] * 100))
