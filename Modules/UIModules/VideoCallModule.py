@@ -23,9 +23,8 @@ class VideoCallModule(AbstractModule):
     def start(self, parameters):
         if not self.widget:
             self.initWin(parameters[1], parameters[2])
-            print(self.widget.winId())
         self.winIDExtern = parameters[0]
-        self.resizeEvent()
+        #self.resizeEvent()
         self.reparentWindow(self.winIDExtern)
 
 
@@ -33,7 +32,7 @@ class VideoCallModule(AbstractModule):
     def initWin(self, parentWindow, parentUI):
         self.widget = QX11EmbedContainer(parentWindow)x
         parentUI.addWidget(self.widget)
-        self.widget.resizeEvent.connect(self.resizeEvent)
+        #self.widget.resizeEvent.connect(self.resizeEvent)
 
     def dismiss(self):
         try:
