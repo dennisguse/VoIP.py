@@ -2,12 +2,13 @@ import logging
 
 class ControllerCallBacksHolder(object):
 
-    def __init__(self,  connectIncomingCall = None,  incomingCallCanceled = None, onCallEstablished = None,  outgoingCallCanceled = None, connectRegStateChanged = None):
+    def __init__(self,  connectIncomingCall = None,  incomingCallCanceled = None, onCallEstablished = None,  outgoingCallCanceled = None, connectRegStateChanged = None, callHasVideo = None):
         self.__connectIncomingCall = connectIncomingCall
         self.__incomingCallCanceled = incomingCallCanceled
         self.__onCallEstablished = onCallEstablished
         self.__outgoingCallCanceled = outgoingCallCanceled
         self.__connectRegStateChanged = connectRegStateChanged
+        self.__callHasVideo = callHasVideo
         self.logger = logging.getLogger('CallBacksHolder')
 
     def connectIncomingCall(self):
@@ -39,3 +40,9 @@ class ControllerCallBacksHolder(object):
             self.__connectRegStateChanged(isRegistrated, regStatus, regReason)
         else:
             self.logger.debug("No 'onRegStateChanged' callback")
+
+    def onCallHasVideo(self):
+        if self.__callHasVideo:
+            self.__callHasVideo()
+        else:
+            self.logger.debug("No 'onCallHasVideo' callback")

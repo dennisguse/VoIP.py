@@ -18,6 +18,7 @@ class CallCallBack(pj.CallCallback):
         self.userHangup = False
         self.callClear = callClear
         self.callEstablished = controllerCallBack.onCallEstablised
+        self.callHasVideo = controllerCallBack.onCallHasVideo
         self.numberConfSlotsConnected = 0
         self.numberRecorderSlotsConnected = 0
         self.callEst = False
@@ -55,6 +56,9 @@ class CallCallBack(pj.CallCallback):
             self.connectConfSlots()
         else:
             self.debugMediaState()
+
+    def connectVideo(self):
+        self.callHasVideo()
 
     def connectConfSlots(self):
         self.logger.info("Connecting conf slots")

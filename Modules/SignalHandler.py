@@ -2,6 +2,7 @@ import logging
 import sys
 from PyQt4.QtCore import QObject
 from PyQt4.QtCore import SIGNAL
+from PyQt4.QtCore import QThread
 from SIPController.SipController import SipController
 from Defines import SIGNALS
 from SIPController.ControllerCallBacksHolder import ControllerCallBacksHolder
@@ -23,7 +24,7 @@ class SignalHandler(QObject):
         self.activateModule = activateModule
         self.dismissModule = dismissModule
         self.signalSource = None
-        self.controllerCallBacks = ControllerCallBacksHolder(self.onIncomingCall, self.onIncomingCallCanceled, self.onCallEstablished, self.onOutgoingCallCanceled, self.onRegStateChanged)
+        self.controllerCallBacks = ControllerCallBacksHolder(self.onIncomingCall, self.onIncomingCallCanceled, self.onCallEstablished, self.onOutgoingCallCanceled, self.onRegStateChanged, self.onCallHasVideo)
         self.sipController = SipController(self.controllerCallBacks)
         self.establishedCall = False
 
@@ -135,11 +136,24 @@ class SignalHandler(QObject):
     def onCallEstablished(self):
         self.logger.info("Call established")
         self.emit(SIGNAL(SIGNALS.CALL_ESTABLISHED))
-        #Video? TODO Document
-        test = self.sipController.currentCall.info().vid_cnt
-        #if self.sipController.currentCall.info().vid_cnt != 0: #TODO CHECK WHY 0
-        self.emit(SIGNAL(SIGNALS.CALL_SHOW_VIDEO), self.sipController.getCurrentCallVideoStream())
+
 
     def onSignalLevelChangeRequest(self):
         if self.sipController.currentCallCallback:
             self.emit(SIGNAL(SIGNALS.CALL_SIGNAL_LEVEL_CHANGE), self.sipController.currentCallCallback.getCallLevels())
+
+    def onCallHasVideo(self):
+        test = self.sipController.currentCall.info().vid_cnt
+        #if self.sipController.currentCall.info().vid_cnt != 0: #TODO CHECK WHY 0
+        self.emit(SIGNAL(SIGNALS.CALL_SHOW_VIDEO), self.sipController.getCurrentCallVideoStream())
+
+class VideoTh(QThread):
+
+    def __init__(self, timeToSleep=2):
+        QThread.__init__(self)
+        self.timeToSleep = timeToSleep
+
+    def run(self):
+        while True:
+            time.sleep(0.5)
+            print self.sipController.getCurrentCallVideoStream()
