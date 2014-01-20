@@ -24,12 +24,16 @@ class VideoCallModule(AbstractModule):
         if not self.widget:
             self.initWin(parameters[1], parameters[2])
             print(self.widget.winId())
-        self.reparentWindow(parameters[0])
+        self.winIDExtern = parameters[0]
+        self.resizeEvent()
+        self.reparentWindow(self.winIDExtern)
+
 
 
     def initWin(self, parentWindow, parentUI):
-        self.widget = QX11EmbedContainer(parentWindow)
+        self.widget = QX11EmbedContainer(parentWindow)x
         parentUI.addWidget(self.widget)
+        self.widget.resizeEvent.connect(self.resizeEvent)
 
     def dismiss(self):
         try:
@@ -70,5 +74,8 @@ class VideoCallModule(AbstractModule):
                 winList += win_children
         return None
 
-    def resizeEvent(self, event):
-        print (event)
+    def resizeEvent(self, event=None):
+        print ("!!!!!!!!!!!!!!!!!!!!!!!!!!!GOT EVENT")
+        height = self.widget.size.height
+        width = self.widget.size.width
+        pj.Lib.instance().vid_win_set_size(self.winIDExtern, width, height)
