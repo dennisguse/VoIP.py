@@ -44,7 +44,7 @@ class ModuleHandler(object):
         else:
             self.logger.warning("Module " + moduleName + " has already been loaded!")
 
-    def activateModule(self,  moduleName,  optionalParamenter = None, optionalParameter2 = None): #TODO Array for optional parameters?
+    def activateModule(self,  moduleName,  optionalParamenter = None, optionalParameter2 = None): #TODO Use hashmap for parameters, so that modules can easily access data.
         self.logger.debug("Activate Module " + moduleName)
         if self.checkModuleExists(moduleName):
             if optionalParamenter != None and optionalParameter2 == None:

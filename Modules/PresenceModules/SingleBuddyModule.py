@@ -11,9 +11,9 @@ class SingleBuddyModule(QObject,AbstractModule):
         super(SingleBuddyModule, self).__init__()
         self.logger = logging.getLogger('SingleBuddyModule')
 
-    def start(self,  optionalParameter = None):
-        if optionalParameter:
-            self.buddyURI = optionalParamter
+    def start(self,  buddyURI = None):
+        if buddyURI:
+            self.buddyURI = buddyURI
         else:
             self.buddyURI = BuddyConfigModule.BuddyConfigModule().getBuddys()[0].buddyUri
         if self.buddyURI:
@@ -29,6 +29,6 @@ class SingleBuddyModule(QObject,AbstractModule):
     def dismiss(self):
         self.logger.info("Stopping to track buddy")
 
-    def onBuddyStateChanged(self, stateText):
-        self.logger.info("Buddy module detected buddy state change")
-        self.emit(SIGNAL(SIGNALS.BUDDY_STATE_CHANGED), stateText)
+    def onBuddyStateChanged(self, state_code, state_text):
+        self.logger.info("Buddy module detected buddy state change: " + str(state_code) + " " + state_text)
+        self.emit(SIGNAL(SIGNALS.BUDDY_STATE_CHANGED), state_code, state_text)
