@@ -146,6 +146,7 @@ class SignalHandler(QObject):
         test = self.sipController.currentCall.info().vid_cnt
         #if self.sipController.currentCall.info().vid_cnt != 0: #TODO CHECK WHY 0
         self.emit(SIGNAL(SIGNALS.CALL_SHOW_VIDEO), self.sipController.getCurrentCallVideoStream())
+        self.logger.debug("Call has video with win id: " + str(self.sipController.getCurrentCallVideoStream()))
 
 class VideoTh(QThread):
 

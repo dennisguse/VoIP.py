@@ -54,6 +54,7 @@ class CallCallBack(pj.CallCallback):
         if self.call.info().media_state == pj.MediaState.ACTIVE:
             self.logger.info("Media state changed to active")
             self.connectConfSlots()
+            self.connectVideo()
         else:
             self.debugMediaState()
 
