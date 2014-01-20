@@ -8,7 +8,4 @@ class PresenceCallBack(pj.BuddyCallback):
         
     def on_state(self):
         if self.__bodyFunctionToCall  != None:
-            self.__bodyFunctionToCall(self.buddy.info().online_text)
-        
-
-
+            self.__bodyFunctionToCall(self.buddy.info().online_status, self.buddy.info().online_text)

@@ -88,7 +88,7 @@ class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
         self.__ui.regState.setToolTip("RegCode: " + str(reg_code) + " RegReason: " + reg_reason)
 
     def onBuddyStateChanged(self, stateText):
-        self.__ui.lblBuddy.setToolTip("BuddyState: " + stateText)
+        self.__ui.lblBuddy.setToolTip("BuddyState: " + str(stateText))
         if stateText == "Ready":
             ImagePlayer.gifMovie(self.__ui.lblBuddy,  UIResources.RESCOURCES_PIC["Online"])
             self.__ui.btn.setEnabled(True)

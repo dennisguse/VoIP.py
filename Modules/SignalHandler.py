@@ -127,10 +127,10 @@ class SignalHandler(QObject):
 
     def onBuddyStateChanged(self, stateText, buddyURI = None):
         if buddyURI:
-            self.logger.info("Buddy " + buddyURI + " state changed: " + stateText)
+            self.logger.info("Buddy " + buddyURI + " state changed: " + str(stateText))
             self.emit(SIGNAL(SIGNALS.BUDDY_STATE_CHANGED), stateText, buddyURI)
         else:
-            self.logger.info("Buddy state changed: " + stateText)
+            self.logger.info("Buddy state changed: " + str(stateText))
             self.emit(SIGNAL(SIGNALS.BUDDY_STATE_CHANGED), stateText)
 
     def onCallEstablished(self):
