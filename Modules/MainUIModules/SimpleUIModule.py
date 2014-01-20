@@ -77,15 +77,15 @@ class SimpleUI(AbstractUIModule,  QtGui.QWidget):
             ImagePlayer.gifMovie(self.__ui.regState,  UIResources.RESCOURCES_PIC["LoadAnimation"])
         self.__ui.regState.setToolTip("RegCode: " + str(reg_code) + " RegReason: " + reg_reason)
 
-    def onBuddyStateChanged(self, stateText):
-        self.__ui.lblBuddy.setToolTip("BuddyState: " + stateText)
-        if stateText == "Ready":
+    def onBuddyStateChanged(self, state_code, state_text):
+        self.__ui.lblBuddy.setToolTip("BuddyState: " + state_text)
+        if state_text == "Ready":
             ImagePlayer.gifMovie(self.__ui.lblBuddy,  UIResources.RESCOURCES_PIC["Online"])
             self.__ui.btn.setEnabled(True)
-        elif stateText == "Not online":
+        elif state_text == "Not online":
             self.__ui.btn.setEnabled(False)
             ImagePlayer.gifMovie(self.__ui.lblBuddy, UIResources.RESCOURCES_PIC["Offline"])
-        elif stateText == "Busy":
+        elif state_text == "Busy":
             ImagePlayer.gifMovie(self.__ui.lblBuddy, UIResources.RESCOURCES_PIC["Busy"])
 
     def closeEvent(self, event):
