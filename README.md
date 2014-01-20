@@ -14,6 +14,7 @@ Software Requirements:
     -- For Ubuntu you can use the following PPAs to install python-pjsip
     ---- https://launchpad.net/~dennis.guse/+archive/sip-tools
     ---- https://launchpad.net/~dennis.guse/+archive/sip-tools-beta
+    - Python-xlib
 
 ATTENTION: The video-features are not available (yet) in the python-bindings from PJSIP (upstream).
 Our patched sources for PJSIP are available here: https://github.com/dennisguse/pjsip/tree/python-video

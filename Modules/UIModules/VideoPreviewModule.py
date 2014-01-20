@@ -18,21 +18,13 @@ class VideoPreviewModule(AbstractModule):
 
     def start(self, parent):
         #self.widget = QDialog(parent)
-        #self.widget.resize(350,320)
-        #self.widget.setWindowTitle("Video Preview Window")
-        #self.widget.show()
-        #self.widget = QWidget(parent)
-        #p = self.widget.palette()
-        #p.setColor(self.widget.backgroundRole(), Qt.red)
-        #self.widget.setPalette(p)
-        #self.widget.resize(350,320)
-        #parent.layVid.addWidget(self.widget)
+        #self.widget.resize(500,500)
         #self.widget.show()
 
-        self.widget = parent.widget
+        self.widget = QX11EmbedContainer(parent)
+        parent.videoPreview.addWidget(self.widget)
 
         self.lib = pj.Lib.instance()
-        print (self.widget.winId())
         previewWinID = self.lib.start_video_preview(self.settings.captureDevice, self.settings.renderDevice)
         self.reparentWindow(previewWinID)
 
@@ -59,7 +51,7 @@ class VideoPreviewModule(AbstractModule):
             win.set_wm_normal_hints(flags=(Xutil.PPosition | Xutil.PSize | Xutil.PMinSize),min_width=50,min_height=50)
             hints = win.get_wm_normal_hints()
         else:
-            print("Not successfull")
+            print("Not successful")
 
     def getWin(self, winId):
         display = Xlib.display.Display()
