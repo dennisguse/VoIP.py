@@ -117,9 +117,7 @@ class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
 
     def disableCallButton(self):
         self.__ui.btn.setEnabled(False)
-        self.timer = AsyncTimer()
-        self.connect( self.timer, SIGNAL("TIMER_END"), self.enableCallButton )
-        self.timer.start()
+        QTimer.singleShot(500, self.enableCallButton )
 
     def enableCallButton(self):
         self.__ui.btn.setEnabled(True)
@@ -137,19 +135,7 @@ class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
         self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE),  'SignalbarModule', {"parent":self, "parentLayout":self.__ui.gridLayout, "signalSource": self.signalSource})
 
     def onManuallyStatusChange(self, status):
-        if status == 1:
+        if status == 1: #TODO What is status 1? Enum in PJSIP?
             SIGNALS.emit(self, SIGNALS.OWN_ONLINE_STATE_CHANGED, False)
         else:
             SIGNALS.emit(self, SIGNALS.OWN_ONLINE_STATE_CHANGED, True)
-
-
-
-class AsyncTimer(QThread):
-
-    def __init__(self, timeToSleep=2):
-        QThread.__init__(self)
-        self.timeToSleep = timeToSleep
-
-    def run(self):
-        time.sleep(self.timeToSleep)
-        self.emit(SIGNAL("TIMER_END"))
