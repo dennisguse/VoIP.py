@@ -15,7 +15,7 @@ from ConfigModules import BuddyConfigModule
 class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
     
     MODULES_TO_LOAD = ['ErrorDialog',  'WaveRecordModule',  'RingToneModule', 'SingleBuddyModule',
-                       'VideoIncomingModule', 'VideoOutgoingModule', 'DeviceChooserModuleSimple']
+                       'VideoIncomingModule', 'VideoOutgoingModule', 'DeviceChooserModuleSimple', 'SignalbarModule']
     
     def __init__(self, signalSource, parent=None):
         QtGui.QWidget.__init__(self, parent)
@@ -25,8 +25,6 @@ class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
         self.connectButtons()
         self.connectSignals()
         self.numberToCall = BuddyConfigModule.BuddyConfigModule().getBuddys()[0].number
-        self.signalLevelThread = None
-        self.disableSignalLevelBars()
         self.__ui.cbOwnStatus.currentIndexChanged.connect(self.onManuallyStatusChange)
         
     def registerNewModules(self):        
@@ -47,14 +45,8 @@ class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
         self.connect(self.signalSource, SIGNAL(SIGNALS.BUDDY_STATE_CHANGED), self.onBuddyStateChanged)
         self.connect(self.signalSource, SIGNAL(SIGNALS.CALL_SHOW_VIDEO), self.showCallVideo)
         self.connect(self.signalSource, SIGNAL(SIGNALS.CALL_ESTABLISHED), self.onEstablished)
-        self.connect(self.signalSource, SIGNAL(SIGNALS.CALL_SIGNAL_LEVEL_CHANGE), self.showSignalLevel)
     
     def onIncomingCall(self,  incomingCallerNumber):
-        try:
-            #self.emit(SIGNAL(SIGNALS.MODULE_DISMISS), 'VideoPreviewModule')
-            pass
-        except:
-            pass
         logging.info("Got incoming call from: " + incomingCallerNumber)
         self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE),  'RingToneModule',  None)
         self.__ui.btn.setText("Anruf annehmen")
@@ -69,8 +61,8 @@ class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
 
     def onOutgoingCallCanceled(self):
         self.__ui.btn.setText("Anrufen")
-        self.disableSignalLevelBars()
         self.emit(SIGNAL(SIGNALS.MODULE_DISMISS), 'VideoCallModule')
+        self.emit(SIGNAL(SIGNALS.MODULE_DISMISS), 'SignalbarModule')
         self.__ui.btn.clicked.disconnect()
         self.__ui.btn.clicked.connect(self.btnStartCall)
 
@@ -102,11 +94,6 @@ class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
         self.emit(SIGNAL(SIGNALS.CLOSE))
 
     def btnStartCall(self):
-        try:
-            #self.emit(SIGNAL(SIGNALS.MODULE_DISMISS), 'VideoPreviewModule')
-            pass
-        except:
-            pass
         SIGNALS.emit(self, SIGNALS.CALL_NUMBER, self.numberToCall)
         self.__ui.btn.setText("Auflegen")
         self.__ui.btn.clicked.disconnect()
@@ -116,14 +103,13 @@ class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
         SIGNALS.emit(self, SIGNALS.CALL_CONNECT)     
         self.emit(SIGNAL(SIGNALS.MODULE_DISMISS),  self.MODULES_TO_LOAD[2])    
         self.__ui.btn.setText("Auflegen")
-        self.__ui.cbPreview.setCheckable(False)
         self.__ui.btn.clicked.disconnect()        
         self.__ui.btn.clicked.connect(self.btnHangup)
 
     def btnHangup(self):
         SIGNALS.emit(self, SIGNALS.CALL_HANGUP)
         self.emit(SIGNAL(SIGNALS.MODULE_DISMISS), 'VideoCallModule')
-        self.disableSignalLevelBars()
+        self.emit(SIGNAL(SIGNALS.MODULE_DISMISS), 'SignalbarModule')
         self.__ui.btn.setText("Anrufen")
         self.__ui.btn.clicked.disconnect()
         self.__ui.btn.clicked.connect(self.btnStartCall)
@@ -138,8 +124,6 @@ class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
     def enableCallButton(self):
         self.__ui.btn.setEnabled(True)
 
-
-
     def showCallVideo(self, winID):
         self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE), 'VideoIncomingModule', {"windowId": winID, "parentWindow": self, "parentContainer": self.__ui.videoIncoming})
 
@@ -149,29 +133,8 @@ class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
         self.emit(SIGNAL(SIGNALS.REGISTER_REQUEST_INITIAL_STATE))
         self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE), 'VideoOutgoingModule', {"parentWindow": self, "parentContainer": self.__ui.videoOutgoing})
 
-    def showSignalLevel(self, level):
-        self.__ui.pbTx.setValue(int(level[0] * 100))
-        self.__ui.pbRx.setValue(int(level[1] * 100))
-
-    def requestSignalUpdate(self):
-        self.emit(SIGNAL(SIGNALS.CALL_SIGNAL_LEVEL_REQUEST))
-
     def onEstablished(self):
-        self.__ui.pbRx.setEnabled(True)
-        self.__ui.pbTx.setEnabled(True)
-        self.signalLevelThread = SignalLevelThread(self.requestSignalUpdate)
-        self.signalLevelThread.start()
-
-    def disableSignalLevelBars(self):
-        self.__ui.pbRx.setValue(0)
-        self.__ui.pbTx.setValue(0)
-        self.__ui.pbRx.setDisabled(True)
-        self.__ui.pbTx.setDisabled(True)
-        try:
-            self.signalLevelThread.stop()
-            self.signalLevelThread = None
-        except:
-            pass
+        self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE),  'SignalbarModule', {"parent":self, "parentLayout":self.__ui.gridLayout, "signalSource": self.signalSource})
 
     def onManuallyStatusChange(self, status):
         if status == 1:
@@ -179,20 +142,7 @@ class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
         else:
             SIGNALS.emit(self, SIGNALS.OWN_ONLINE_STATE_CHANGED, True)
 
-class SignalLevelThread(QThread):
 
-    def __init__(self, requestUpdate):
-        QThread.__init__(self)
-        self.requestStop = False
-        self.requestUpdate = requestUpdate
-
-    def run(self):
-        while self.requestStop == False:
-            self.requestUpdate()
-            time.sleep(0.1)
-
-    def stop(self):
-        self.requestStop = True
 
 class AsyncTimer(QThread):
 
