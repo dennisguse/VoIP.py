@@ -102,7 +102,7 @@ class SipController(object):
                 acc_cfg.video_capture_device = -1
                 acc_cfg.video_render_device = 2
                 acc_cfg.vid_out_auto_transmit = True
-                acc_cfg.vid_in_auto_show =  True
+                acc_cfg.vid_in_auto_show =  False
 
                 acc_cfg.auth_cred = [pj.AuthCred("*", str(self.accountInfo.sipName), str(self.accountInfo.sipSecret))] #No better way using bindings?
                 if self.networkSettings != None:

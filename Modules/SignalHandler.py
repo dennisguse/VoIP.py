@@ -143,18 +143,6 @@ class SignalHandler(QObject):
             self.emit(SIGNAL(SIGNALS.CALL_SIGNAL_LEVEL_CHANGE), self.sipController.currentCallCallback.getCallLevels())
 
     def onCallHasVideo(self):
-        test = self.sipController.currentCall.info().vid_cnt
-        #if self.sipController.currentCall.info().vid_cnt != 0: #TODO CHECK WHY 0
+        self.logger.debug("Video-stream count: " + str(self.sipController.currentCall.info().vid_cnt)) #TODO CHECK WHY 0
         self.emit(SIGNAL(SIGNALS.CALL_SHOW_VIDEO), self.sipController.getCurrentCallVideoStream())
         self.logger.debug("Call has video with win id: " + str(self.sipController.getCurrentCallVideoStream()))
-
-class VideoTh(QThread):
-
-    def __init__(self, timeToSleep=2):
-        QThread.__init__(self)
-        self.timeToSleep = timeToSleep
-
-    def run(self):
-        while True:
-            time.sleep(0.5)
-            print self.sipController.getCurrentCallVideoStream()
