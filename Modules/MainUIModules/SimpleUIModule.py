@@ -1,8 +1,6 @@
 import logging
-import time
 
 from Modules.MainUIModules.AbstractUIModule import AbstractUIModule
-from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 from PyQt4 import uic, QtGui
 from Defines import SIGNALS
@@ -17,7 +15,7 @@ from ConfigModules import BuddyConfigModule
 class SimpleUI(AbstractUIModule,  QtGui.QWidget):
     
     MODULES_TO_LOAD = ['ErrorDialog',  'WaveRecordModule',  'RingToneModule', 'SingleBuddyModule',
-                       'DeviceChooserModuleSimple']
+                       'DeviceChooserModuleSimple', 'SystrayModule']
     
     def __init__(self, signalSource, parent=None):
         QtGui.QWidget.__init__(self, parent)   
@@ -35,6 +33,8 @@ class SimpleUI(AbstractUIModule,  QtGui.QWidget):
         self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE),  'WaveRecordModule')
         self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE),  'DeviceChooserModuleSimple')
         self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE),  'SingleBuddyModule')
+        self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE),  'SystrayModule', {"ui":self})
+
 
 
     def connectButtons(self):
@@ -114,9 +114,7 @@ class SimpleUI(AbstractUIModule,  QtGui.QWidget):
 
     def disableCallButton(self):
         self.__ui.btn.setEnabled(False)
-        self.timer = AsyncTimer()
-        self.connect( self.timer, SIGNAL("TIMER_END"), self.enableCallButton )
-        self.timer.start()
+        QTimer.singleShot(500, self.enableCallButton )
 
     def enableCallButton(self):
         self.__ui.btn.setEnabled(True)
@@ -129,15 +127,5 @@ class SimpleUI(AbstractUIModule,  QtGui.QWidget):
 
     def showWindow(self):   
         self.__ui.show()
-        logging.info("Stupid UI is up and running")
+        logging.info("SimpleUI is up and running")
         self.emit(SIGNAL(SIGNALS.REGISTER_REQUEST_INITIAL_STATE))
-
-class AsyncTimer(QThread):
-
-    def __init__(self, timeToSleep=2):
-        QThread.__init__(self)
-        self.timeToSleep = timeToSleep
-
-    def run(self):
-        time.sleep(self.timeToSleep)
-        self.emit(SIGNAL("TIMER_END"))

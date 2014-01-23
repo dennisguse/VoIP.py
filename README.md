@@ -1,23 +1,24 @@
-Copyright (C)
+Copyright, 2013/2014
     Frank Haase (fra.haase@gmail.com)
     Dennis Guse (dennis.guse@alumni.tu-berlin.de)
 The program is licensed under GPLv3 and comes WITHOUT ANY WARRANTY.
 
-
 VoIP.py is a small framework to create highly configurable UIs for VoIP-telephony.
 PJSIP (http://www.pjsip.org) is used as library for the SIP implementation and accessed via the available python-bindings of PJSIP.
 
-
 Software Requirements:
     - Python 2.7
-    - PJSIP with python-bindings
+    - PJSIP with python-bindings:
     -- For Ubuntu you can use the following PPAs to install python-pjsip
     ---- https://launchpad.net/~dennis.guse/+archive/sip-tools
     ---- https://launchpad.net/~dennis.guse/+archive/sip-tools-beta
-    - Python-xlib
+    - Python-xlib (for video support)
 
 ATTENTION: The video-features are not available (yet) in the python-bindings from PJSIP (upstream).
 Our patched sources for PJSIP are available here: https://github.com/dennisguse/pjsip/tree/python-video
+
+
+
 
 
 Contents:
@@ -43,3 +44,6 @@ Contents:
 	4. Codec not configurable (not yet)
 	5. Wave-recording merges caller and callee (needs to be splited)
 	6. One Account only
+
+
+Icons are taken from here: http://commons.wikimedia.org/wiki/Category:SVG_telephone_icons

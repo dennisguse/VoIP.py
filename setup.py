@@ -5,5 +5,5 @@ setup(
     description="A highly re-configurable VoIP-Client framework using PJSIP).",
     author=["Frank Haase", "Dennis Guse"],
     packages = ['', 'Defines', 'SIPController', 'Modules', 'Modules/CallModules', 'Modules/ConfigModules', 'Modules/MainCliModules', 'Modules/MainUIModules', 'Modules/UIModules', 'Modules/PresenceModules'],
-    package_data={'' : ['UIElements/*', 'Sounds/*']},
+    package_data={'' : ['UIElements/*', 'Resources/*']},
 )

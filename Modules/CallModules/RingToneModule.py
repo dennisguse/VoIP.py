@@ -4,7 +4,7 @@ from Modules.AbstractModule import AbstractModule
 
 class RingToneModule(QtCore.QThread,  AbstractModule):
   
-    def __init__(self,  pathToRingTone = './Sounds/phone.wav'):
+    def __init__(self,  pathToRingTone = './Resources/phone.wav'):
         super(RingToneModule,self).__init__()
         self.ringToneFilePath = pathToRingTone
         self.lib = pj.Lib.instance()

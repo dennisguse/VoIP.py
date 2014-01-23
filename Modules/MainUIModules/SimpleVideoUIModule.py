@@ -1,5 +1,4 @@
 import logging
-import time
 
 from Modules.MainUIModules.AbstractUIModule import AbstractUIModule
 from PyQt4.QtCore import *
@@ -15,7 +14,7 @@ from ConfigModules import BuddyConfigModule
 class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
     
     MODULES_TO_LOAD = ['ErrorDialog',  'WaveRecordModule',  'RingToneModule', 'SingleBuddyModule',
-                       'VideoIncomingModule', 'VideoOutgoingModule', 'DeviceChooserModuleSimple', 'SignalbarModule']
+                       'VideoIncomingModule', 'VideoOutgoingModule', 'DeviceChooserModuleSimple', 'SignalbarModule', 'SystrayModule']
     
     def __init__(self, signalSource, parent=None):
         QtGui.QWidget.__init__(self, parent)
@@ -33,6 +32,7 @@ class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
         self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE),  'WaveRecordModule')
         self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE),  'DeviceChooserModule')
         self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE),  'SingleBuddyModule')
+        self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE),  'SystrayModule', {"ui":self})
 
     def connectButtons(self):
         pass #is done on demand

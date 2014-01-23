@@ -17,4 +17,5 @@ class MODULES(object):
     VideoIncomingModule = './Modules/UIModules/VideoIncomingModule.py', \
     VideoOutgoingModule = './Modules/UIModules/VideoOutgoingModule.py', \
     SignalbarModule = './Modules/UIModules/SignalbarModule.py', \
+    SystrayModule = './Modules/UIModules/SystrayModule.py' \
     )
