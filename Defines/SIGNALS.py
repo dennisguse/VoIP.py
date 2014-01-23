@@ -8,6 +8,7 @@ CALL_NUMBER = 'callNumber'
 CALL_INCOMING = 'inCallSig'
 CALL_INCOMING_CANCELED = 'inCallCanceled'
 CALL_OUTGOING_CANCELED = 'outCallCanceled'
+
 CALL_SHOW_VIDEO = 'callShowVideo'
 CALL_SIGNAL_LEVEL_CHANGE = 'callSignalLevelChange'
 CALL_SIGNAL_LEVEL_REQUEST = 'callSignalLevelRequest'
@@ -19,16 +20,17 @@ BUDDY_STATE_CHANGED = 'buddyStateChanged'
 OWN_ONLINE_STATE_CHANGED = 'ownOnlineStateChanged'
 
 #Modules Signals
-MODULE_LOAD = 'loadmod'
-MODULE_ACTIVATE = 'activatemodule'
-MODULE_DISMISS = 'dismissmodule'
+MODULE_LOAD = 'module_load'
+MODULE_ACTIVATE = 'module_activate'
+MODULE_DISMISS = 'module_dismiss'
 
 #Register State Signals
 REGISTER_REQUEST_INITIAL_STATE = 'regInitialState'
 REGISTER_STATE_CHANGE = 'regStateChanged'
 
 #Misc
-CLOSE = 'closeProg'
+CLOSE = 'close'
+STARTUP_ERROR = "startup_error"
 
 def emit(sender, signalName,  param1 = None,  param2 = None):
     logging.getLogger("SIGNALS").info(sender.__class__.__name__ + " " + signalName)
