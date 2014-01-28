@@ -4,20 +4,9 @@ Config
 
 SIP 
 * Check SIP return codes (especially if registration fails and call fails) and state the reason (at least in the console)
-* Register after audio device selection dialog (if necessary)
 
 Misc
-* CTRL-C does not work (after QT is opened)
 * No references on pjlib.lib(); it might change if the SIPController reloads.
-
-Ringtone
-* Generate ringtone on ringing! (SIP:180)
-
-Startup
-* Only register, if audio device is selected (at least set ready only then)
-
-Shutdown
-* Nice animation
 
 
 Style (keep everything readable <<)
