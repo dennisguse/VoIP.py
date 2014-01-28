@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=alpha
+Name=VoIPPy-simple
+Exec=/home/dennis/hack/VoIP.py/VoIPPy-simple.py
+Path=/home/dennis/hack/VoIP.py
+Terminal=false
+StartupNotify=true
+Type=Application
+Categories=Utility;Application;
