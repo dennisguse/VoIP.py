@@ -4,6 +4,9 @@ import PyQt4.QtCore
 import logging, traceback
 from SIPController.ControllerCallBacksHolder import ControllerCallBacksHolder
 
+DIALTONE_PATH = './Resources/dialtone.wav'
+
+
 class CallCallBack(pj.CallCallback):
 
     def __init__(self, dumpSettings, callClear, controllerCallBack,  call=None,  pjLib=None):
@@ -27,6 +30,8 @@ class CallCallBack(pj.CallCallback):
         self.recorderIDInc = None
         self.recorderSlotOut = None
         self.recorderIDOut = None
+        self.dialToneSlot = None
+        self.dialTonePlayerID = None
 
 
     def on_state(self):
@@ -34,6 +39,7 @@ class CallCallBack(pj.CallCallback):
         if self.call.info().state == pj.CallState.DISCONNECTED:
             #TODO Disconnect ports only if they were connected (otherwise PJSIP dies.)
             #Should be fixed, but we have to test that!
+            self.stopDialTone()
             self.signalThread = None
             self.callEst = False
             self.disconnectRecorder()
@@ -46,9 +52,12 @@ class CallCallBack(pj.CallCallback):
             self.callClear()
             self.logger.debug("Call is disconnected, active conf slots:" + str(self.numberConfSlotsConnected) + " recorder:" + str(self.numberRecorderSlotsConnected))
         elif self.call.info().state == pj.CallState.CONFIRMED:
+            self.stopDialTone()
             self.logger.info("Call established")
             self.callEstablished()
             self.callEst = True
+        elif self.call.info().state == pj.CallState.EARLY:
+            self.playDialTone()
 
     def on_media_state(self):
         if self.call.info().media_state == pj.MediaState.ACTIVE:
@@ -106,15 +115,18 @@ class CallCallBack(pj.CallCallback):
             self.logger.error("Unable to disconnect conf slots, no conf slots connected")
 
     def disconnectRecorder(self):
-        if self.numberRecorderSlotsConnected > 0:
-            self.lib.conf_disconnect(self.call_slot, self.recorderSlotInc)
-            self.lib.conf_disconnect(0, self.recorderSlotOut)
-            self.lib.recorder_destroy(self.recorderIDInc)
-            self.lib.recorder_destroy(self.recorderIDOut)
-            self.recorderIDInc = None
-            self.recorderSlotInc = None
-            self.recorderIDOut = None
-            self.recorderSlotOut = None
+        if self.numberRecorderSlotsConnected > 0 and self.call_slot != None and self.recorderSlotInc != None:
+            try:
+                self.lib.conf_disconnect(self.call_slot, self.recorderSlotInc)
+                self.lib.conf_disconnect(0, self.recorderSlotOut)
+                self.lib.recorder_destroy(self.recorderIDInc)
+                self.lib.recorder_destroy(self.recorderIDOut)
+                self.recorderIDInc = None
+                self.recorderSlotInc = None
+                self.recorderIDOut = None
+                self.recorderSlotOut = None
+            except:
+                pass
             self.numberRecorderSlotsConnected = self.numberRecorderSlotsConnected - 1
 
 
@@ -132,3 +144,16 @@ class CallCallBack(pj.CallCallback):
 
     def getCallLevels(self):
         return self.lib.conf_get_signal_level(self.call_slot)
+
+    def playDialTone(self):
+        self.dialTonePlayerID = self.lib.create_player(DIALTONE_PATH, True)
+        self.dialToneSlot = self.lib.player_get_slot(self.dialTonePlayerID)
+        self.lib.conf_connect(self.dialToneSlot, 0)
+
+    def stopDialTone(self):
+        if self.dialToneSlot != None:
+            self.lib.conf_disconnect(self.dialToneSlot, 0)
+            self.dialToneSlot = None
+        if self.dialTonePlayerID != None:
+            self.lib.player_destroy(self.dialTonePlayerID)
+            self.dialTonePlayerID = None

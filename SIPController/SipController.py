@@ -2,11 +2,12 @@ import logging
 import PJSIPLoggingCallBack
 
 import pjsua as pj
-from ConfigModules import AccountConfigModule, AudioDeviceModule, DumpSettingsModule, MediaConfigModule, NetworkSettingsModule, CodecConfigurationModule
+from ConfigModules import AccountConfigModule, AudioDeviceModule, DumpSettingsModule, MediaConfigModule, NetworkSettingsModule, CodecConfigurationModule, VideoDeviceModule
 import SIPController.AccountCallBack as accountCallB
 import SIPController.CallCallBack as CallCallBack
 import SIPController.PresenceCallBack as PresenceCallBack
 import SIPController.ControllerCallBacksHolder as ControllerCallBacksHolder
+import Defines.SIP_STATUS_CODES as SIP_CODES
 
 
 class SipController(object):
@@ -46,6 +47,7 @@ class SipController(object):
         self.accountInfo = AccountConfigModule.AccountConfigModule().getAccountSettings()
         self.dumpSettings = DumpSettingsModule.DumpSettingsModule().getDumpSettings()
         self.audioDevice = AudioDeviceModule.AudioDeviceModule().getAudioDeviceSettings()
+        self.videoDevice = VideoDeviceModule.VideoDeviceModule()
 
     def initLib(self):
         """
@@ -94,16 +96,11 @@ class SipController(object):
                 acc_cfg = pj.AccountConfig()
                 acc_cfg.id = self.accountInfo.getSipAddress()
                 acc_cfg.reg_uri = self.accountInfo.getSipRegURI()
-
-
-                test = self.pjLib.vid_enum_devs()
-                #TODO
-                acc_cfg.video_outgoing_default = True
-                acc_cfg.video_capture_device = -1
-                acc_cfg.video_render_device = 2
-                acc_cfg.vid_out_auto_transmit = True
-                acc_cfg.vid_in_auto_show =  False
-
+                acc_cfg.video_outgoing_default = self.videoDevice.video_outgoing_default
+                acc_cfg.video_capture_device = self.videoDevice.video_capture_device
+                acc_cfg.video_render_device = self.videoDevice.video_render_device
+                acc_cfg.vid_out_auto_transmit = self.videoDevice.vid_out_auto_transmit
+                acc_cfg.vid_in_auto_show =  self.videoDevice.vid_in_auto_show
                 acc_cfg.auth_cred = [pj.AuthCred("*", str(self.accountInfo.sipName), str(self.accountInfo.sipSecret))] #No better way using bindings?
                 if self.networkSettings != None:
                     if self.networkSettings.tcp == True:
@@ -166,13 +163,12 @@ class SipController(object):
         self.logger.info("Hangup current call")
         if self.currentCall != None:
             self.currentCall.userHangup = True
-            self.currentCall.hangup(200)
+            self.currentCall.hangup(SIP_CODES.SIP_OK)
             self.currentCall = None
             self.currentCallCallback = None
-            #self.pjLib.recorder_destroy(self.recorderID) #TODO Check if needed.
         else:
             try:
-                self.pjAccountCb.hangup(200) #TODO Use status code?
+                self.pjAccountCb.hangup(SIP_CODES.SIP_OK)
             except:
                 pass
         return
@@ -194,13 +190,13 @@ class SipController(object):
         """
         reg = False
         if self.pjAccount != 0:
-            if self.pjAccount.info().reg_status == 200:
+            if self.pjAccount.info().reg_status == SIP_CODES.SIP_OK:
                 reg = True
             self.controllerCallBack.onRegStateChanged(reg, self.pjAccount.info().reg_status,  self.pjAccount.info().reg_reason)
 
     def onIncommingCall(self,  call = None):
         if self.currentCall != None:
-            call.hangup(468) #TODO status code and loggging
+            call.hangup(SIP_CODES.SIP_BUSY_HERE) #TODO loggging
         else:
             self.currentCall = call
             self.logger.info('Incoming call from ' + self.currentCall.info().remote_uri)

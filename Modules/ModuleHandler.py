@@ -48,7 +48,7 @@ class ModuleHandler(object):
             return
         self.logger.info("Loading module with name: " + moduleName)
 
-        module = imp.load_source(moduleName+ "a", modulePath+ "a")
+        module = imp.load_source(moduleName, modulePath)
         self.classes[moduleName] = getattr(module, moduleName)
         self.objects[moduleName] = self.classes[moduleName]()
 

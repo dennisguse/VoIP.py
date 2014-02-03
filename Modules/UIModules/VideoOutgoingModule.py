@@ -1,6 +1,6 @@
 from Modules.UIModules import VideoViewModule
 import pjsua
-from SIPController.VideoSettings import VideoSettings
+from ConfigModules.VideoDeviceModule import VideoDeviceModule
 
 class VideoOutgoingModule(VideoViewModule.VideoViewModule):
 
@@ -8,9 +8,8 @@ class VideoOutgoingModule(VideoViewModule.VideoViewModule):
         super(VideoOutgoingModule, self).__init__()
 
     def start(self, parameters):
-        settings = VideoSettings()
-
-        windowId = pjsua.Lib.instance().start_video_preview(settings.captureDevice, settings.renderDevice)
+        settings = VideoDeviceModule()
+        windowId = pjsua.Lib.instance().start_video_preview(settings.video_capture_device, settings.video_render_device)
         self.showVideoPane(parameters["parentWindow"], parameters["parentContainer"], windowId);
 
     def dismiss(self):

@@ -144,5 +144,5 @@ class SignalHandler(QObject):
 
     def onCallHasVideo(self):
         self.logger.debug("Video-stream count: " + str(self.sipController.currentCall.info().vid_cnt)) #TODO CHECK WHY 0
-        self.emit(SIGNAL(SIGNALS.CALL_SHOW_VIDEO), self.sipController.getCurrentCallVideoStream())
-        self.logger.debug("Call has video with win id: " + str(self.sipController.getCurrentCallVideoStream()))
+        #self.emit(SIGNAL(SIGNALS.CALL_SHOW_VIDEO), self.sipController.getCurrentCallVideoStream())
+        #self.logger.debug("Call has video with win id: " + str(self.sipController.getCurrentCallVideoStream()))

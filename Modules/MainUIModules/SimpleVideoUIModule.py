@@ -135,7 +135,7 @@ class SimpleVideoUI(AbstractUIModule,  QtGui.QWidget):
         self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE),  'SignalbarModule', {"parent":self, "parentLayout":self.__ui.gridLayout, "signalSource": self.signalSource})
 
     def onManuallyStatusChange(self, status):
-        if status == 1: #TODO What is status 1? Enum in PJSIP?
+        if status == 1: #1 represents the first element in the combo box
             SIGNALS.emit(self, SIGNALS.OWN_ONLINE_STATE_CHANGED, False)
         else:
             SIGNALS.emit(self, SIGNALS.OWN_ONLINE_STATE_CHANGED, True)

@@ -3,12 +3,12 @@ import Xlib.display
 
 from PyQt4.QtGui import *
 from Modules.AbstractModule import AbstractModule
-from SIPController.VideoSettings import VideoSettings
+from ConfigModules.VideoDeviceModule import VideoDeviceModule
 
 class VideoViewModule(AbstractModule):
     def __init__(self):
         self.logger = logging.getLogger("VideoViewModule")
-        self.settings = VideoSettings()
+        self.settings = VideoDeviceModule()
         self.widget = None;
 
     def hasSignalsToRegister(self):
@@ -19,7 +19,7 @@ class VideoViewModule(AbstractModule):
 
     def showVideoPane(self, parentWindow, parentContainer, windowId):
         if self.widget is None:  # We need to create the widget as this is the first call.
-            self.widget = QX11EmbedContainerAspect(parentWindow)
+            self.widget = QX11EmbedContainer(parentWindow)
             parentContainer.addWidget(self.widget)
         self.reparentWindow(windowId)
 
@@ -64,5 +64,4 @@ class QX11EmbedContainerAspect(QX11EmbedContainer):
         self.setSizePolicy(policy)
 
     def heightForWidth(self, height):
-        print("BLA2")
         return height;
