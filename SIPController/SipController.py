@@ -35,7 +35,6 @@ class SipController(object):
             self.controllerCallBack = ControllerCallBacksHolder()
         self.initFromConfiguration()
         self.initLib()
-        self.registerClient()
 
         #TODO REMOVE!!!!!!!!! Must be done via Configuration
         CodecConfigurationModule.applyConfiguration(self.pjLib)
@@ -82,7 +81,6 @@ class SipController(object):
             self.logger.error("PJSIP could not be started.")
             sys.exit(-1)
         return
-
 
     def registerClient(self):
         """

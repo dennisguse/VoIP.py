@@ -27,6 +27,7 @@ MODULE_DISMISS = 'module_dismiss'
 #Register State Signals
 REGISTER_REQUEST_INITIAL_STATE = 'regInitialState'
 REGISTER_STATE_CHANGE = 'regStateChanged'
+REGISTER = 'register'
 
 #Misc
 CLOSE = 'close'

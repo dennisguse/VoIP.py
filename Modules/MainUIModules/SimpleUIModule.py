@@ -1,4 +1,4 @@
-import logging
+import logging, signal
 
 from Modules.MainUIModules.AbstractUIModule import AbstractUIModule
 from PyQt4.QtCore import *
@@ -32,6 +32,7 @@ class SimpleUI(AbstractUIModule,  QtGui.QWidget):
             SIGNALS.emit(self, SIGNALS.MODULE_LOAD, module, MODULES[module])
         self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE),  'WaveRecordModule')
         self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE),  'DeviceChooserModuleSimple')
+        self.emit(SIGNAL(SIGNALS.REGISTER))
         self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE),  'SingleBuddyModule')
         self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE),  'SystrayModule', {"ui":self})
 
@@ -90,6 +91,7 @@ class SimpleUI(AbstractUIModule,  QtGui.QWidget):
 
     def closeEvent(self, event):
         logging.info("Program close requested")
+        self.__ui.setVisible(False)
         self.emit(SIGNAL(SIGNALS.CLOSE))
 
     def btnStartCall(self):

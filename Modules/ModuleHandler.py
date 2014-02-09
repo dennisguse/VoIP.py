@@ -1,6 +1,5 @@
 import imp, logging, sys, time
 from Modules.MainUIModules.UILoaderModule import UILoader
-from Modules.MainCliModules.MainCliModule import MainCli
 from Modules.SignalHandler import SignalHandler
 from Modules.UIModules.LoadingThread import LoadingThread
 
@@ -10,23 +9,16 @@ from PyQt4.QtCore import SIGNAL
 
 class ModuleHandler(object):
 
-    def __init__(self, mode, configurationFile="Settings.conf"):
+    def __init__(self, mode):
         self.logger = logging.getLogger('ModuleHandler')
         self.classes = {} #The module classes (no instances) which can be used in the program
         self.objects = {} #The instances of the classes/modules.
         self.mode = mode
-
-        if mode == "cli":
-            self.logger.info("Starting in cli-mode:" + configurationFile)
-            self.mode = MainCli()
-        else:
-            self.logger.info("Starting in uiMode(" + mode  + "): " + configurationFile)
-            self.signalHandler = SignalHandler.getInstance() #TODO: add configurable configuration path: via CMD configurationFile
-            self.signalHandler.init(self.module_load,  self.module_start,  self.module_dismiss)
-
-            self.mode = UILoader(self.signalHandler, mode)
-            self.signalHandler.setIncomingSignalSource(self.mode.ui)
-
+        self.logger.info("Starting in uiMode(" + mode  + ")")
+        self.signalHandler = SignalHandler.getInstance()
+        self.signalHandler.init(self.module_load,  self.module_start,  self.module_dismiss)
+        self.mode = UILoader(self.signalHandler, mode)
+        self.signalHandler.setIncomingSignalSource(self.mode.ui)
         self.mode.start()
 
     def is_module_loaded(self,  moduleName):

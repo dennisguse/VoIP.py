@@ -57,4 +57,4 @@ class DeviceChooserModule(QDialog):
         return
 
     def reject(self): #Ignore ESC
-        return;
+        return

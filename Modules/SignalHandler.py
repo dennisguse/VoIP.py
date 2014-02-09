@@ -1,5 +1,4 @@
-import logging
-import sys
+import logging, sys, signal, traceback
 from PyQt4.QtCore import QObject
 from PyQt4.QtCore import SIGNAL
 from PyQt4.QtCore import QThread
@@ -19,7 +18,6 @@ class SignalHandler(QObject):
     def init(self, registerNewModule ,  activateModule ,  dismissModule):
         self.logger = logging.getLogger('SignalHandler')
         self.logger.debug("Init")
-
         self.registerNewModule = registerNewModule
         self.activateModule = activateModule
         self.dismissModule = dismissModule
@@ -48,6 +46,7 @@ class SignalHandler(QObject):
         self.connect(self.signalSource, SIGNAL(SIGNALS.REGISTER_REQUEST_INITIAL_STATE), self.sipController.onRegStateChanged)
         self.connect(self.signalSource, SIGNAL(SIGNALS.CALL_SIGNAL_LEVEL_REQUEST), self.onSignalLevelChangeRequest)
         self.connect(self.signalSource, SIGNAL(SIGNALS.OWN_ONLINE_STATE_CHANGED), self.onOwnOnlineStatusChange)
+        self.connect(self.signalSource, SIGNAL(SIGNALS.REGISTER), self.sipController.registerClient)
 
     def registerNewSignal(self, signalSource, signalName, signalCallBack = None, internalMethodToCall = None):
         self.logger.debug("Register new signal: " + str(signalSource) + ":" + signalName)
@@ -66,7 +65,7 @@ class SignalHandler(QObject):
             self.sipController.freeLib()
         except:
             ex = sys.exc_info()[0]
-            self.logger.error("Unable to free lib: " + str(ex))
+            self.logger.error("Unable to free lib: " + traceback.format_exc())
         return
 
     def onCallSignal(self, numberToCall):
@@ -144,5 +143,5 @@ class SignalHandler(QObject):
 
     def onCallHasVideo(self):
         self.logger.debug("Video-stream count: " + str(self.sipController.currentCall.info().vid_cnt)) #TODO CHECK WHY 0
-        #self.emit(SIGNAL(SIGNALS.CALL_SHOW_VIDEO), self.sipController.getCurrentCallVideoStream())
-        #self.logger.debug("Call has video with win id: " + str(self.sipController.getCurrentCallVideoStream()))
+        self.emit(SIGNAL(SIGNALS.CALL_SHOW_VIDEO), self.sipController.getCurrentCallVideoStream())
+        self.logger.debug("Call has video with win id: " + str(self.sipController.getCurrentCallVideoStream()))

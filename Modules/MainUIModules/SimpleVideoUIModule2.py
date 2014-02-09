@@ -42,7 +42,8 @@ class SimpleVideoUI2(AbstractUIModule,  QtGui.QWidget):
         for module in self.MODULES_TO_LOAD:
             SIGNALS.emit(self, SIGNALS.MODULE_LOAD, module, MODULES[module])
         self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE),  'WaveRecordModule')
-        self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE),  'DeviceChooserModule')
+        self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE),  'DeviceChooserModuleSimple')
+        self.emit(SIGNAL(SIGNALS.REGISTER))
         self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE),  'SingleBuddyModule')
         self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE),  'SystrayModule', {"ui":self})
 
@@ -95,6 +96,7 @@ class SimpleVideoUI2(AbstractUIModule,  QtGui.QWidget):
 
     def closeEvent(self, event):
         logging.info("Program close requested")
+        self.setVisible(False)
         self.emit(SIGNAL(SIGNALS.CLOSE))
 
     def btnStartCall(self):
@@ -127,7 +129,7 @@ class SimpleVideoUI2(AbstractUIModule,  QtGui.QWidget):
         self.videomgmt.btnCall.setEnabled(True)
 
     def showCallVideo(self, winID):
-        #self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE), 'VideoIncomingModule', {"windowId": winID, "parentWindow": self, "parentContainer": self.__ui.videoIncoming})
+        self.emit(SIGNAL(SIGNALS.MODULE_ACTIVATE), 'VideoIncomingModule', {"windowId": winID, "parentWindow": self, "parentContainer": self.videomgmt.layout})
         pass
 
     def showWindow(self):
@@ -155,8 +157,8 @@ class VideoWindowMgmt(QtGui.QWidget):
         p.setColor(self.backgroundRole(), Qt.black)
         self.setPalette(p)
         self.setAutoFillBackground(True)
-        hbox = QtGui.QHBoxLayout()
-        self.setLayout(hbox)
+        self.layout = QtGui.QHBoxLayout()
+        self.setLayout(self.layout)
         self.setMouseTracking(True)
         self.setControl()
         self.setPreview()
@@ -229,15 +231,12 @@ class PreviewWindow(QtGui.QWidget):
 
     def __init__(self, parent=None):
         QtGui.QWidget.__init__(self, parent)
-        p = self.palette()
-        p.setColor(self.backgroundRole(), Qt.green)
-        self.setPalette(p)
-        self.setAutoFillBackground(True)
+        self.setMinimumSize(100,100)
+        self.setMaximumSize(100,100)
+        self.resize(100,100)
+        self.setAutoFillBackground(False)
         self.layout = QtGui.QHBoxLayout()
         self.setLayout(self.layout)
-        self.resize(150,150)
-        self.setMinimumSize(150,150)
-        self.setMaximumSize(150,150)
 
 
     def showWindow(self):
