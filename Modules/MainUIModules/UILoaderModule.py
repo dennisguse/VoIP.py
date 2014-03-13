@@ -18,7 +18,9 @@ class UILoader(object):
             self.ui = SimpleVideoUI2(signalSource)
 
     def start(self):
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!CALLING START UI!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
         self.app.setActiveWindow(self.ui)
         self.ui.showWindow()
         self.app.exec_()
+        print("!!!!!!!!!!!!!!!!!!!!!!!!!CALLING STOP UI!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
 

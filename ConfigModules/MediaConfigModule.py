@@ -1,4 +1,4 @@
-import pjsua
+import pjsua2
 import ConfigModules.MediaConfigConst as UserDefined
 
 class MediaConfigModule(object):
@@ -33,7 +33,7 @@ class MediaConfigModule(object):
         self.turn_server = UserDefined.turn_server
         self.turn_conn_type = UserDefined.turn_conn_type
         self.turn_cred = UserDefined.turn_cred
-        self.__mediaConfig = pjsua.MediaConfig()
+        self.__mediaConfig = pjsua2.MediaConfig()
         self.implementConfiguration()
 
     def getMediaConfig(self):

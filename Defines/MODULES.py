@@ -2,8 +2,7 @@ class MetaA(type):
     def __getitem__(cls, param):
         return cls._config.get(param)
 
-class MODULES(object):
-    __metaclass__=MetaA
+class MODULES(object, metaclass=MetaA):
     _config = dict( \
     RegisterStateDialog = './Modules/UIModules/RegisterStateModule.py', \
     CallDialog = './Modules/UIModules/CallDialogModule.py',  \

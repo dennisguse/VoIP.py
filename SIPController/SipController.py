@@ -1,14 +1,17 @@
 import logging
-import PJSIPLoggingCallBack
-
-import pjsua as pj
+import SIPController.PJSIPLoggingCallBack
+import sys
+import pjsua2 as pj
 from ConfigModules import AccountConfigModule, AudioDeviceModule, DumpSettingsModule, MediaConfigModule, NetworkSettingsModule, CodecConfigurationModule, VideoDeviceModule
-import SIPController.AccountCallBack as accountCallB
+from SIPController import Account
 import SIPController.CallCallBack as CallCallBack
+from SIPController.Call import Call
+from SIPController import Endpoint
+from SIPController.Buddy import Buddy
 import SIPController.PresenceCallBack as PresenceCallBack
 import SIPController.ControllerCallBacksHolder as ControllerCallBacksHolder
 import Defines.SIP_STATUS_CODES as SIP_CODES
-
+from PyQt4 import QtCore
 
 class SipController(object):
     """
@@ -22,11 +25,12 @@ class SipController(object):
         self.logger = logging.getLogger('SipController')
         self.pjAccount = None
         self.pjAccountCb = None
-        self.pjLib = None
+        #self.pjLib = None
+        self.ep = None
         self.pjCallCallBack = None
         self.currentCall = None
         self.accountInfo = None
-        self.transport = None
+        #self.transport = None
         self.recordWav = 0
         self.accountBuddys = None
         if controllerCallBack:
@@ -37,7 +41,7 @@ class SipController(object):
         self.initLib()
 
         #TODO REMOVE!!!!!!!!! Must be done via Configuration
-        CodecConfigurationModule.applyConfiguration(self.pjLib)
+        CodecConfigurationModule.applyConfiguration(self.ep)
         return
 
     def initFromConfiguration(self):
@@ -53,8 +57,17 @@ class SipController(object):
         Initializes the SIP library.
         """
         try:
-            self.pjLib = pj.Lib()
-            uaCfg = pj.UAConfig()
+            self.ep = Endpoint.Endpoint()
+            self.ep.libCreate()
+            self.epConfig = pj.EpConfig()
+            self.epConfig.uaConfig.threadCnt = 0
+            self.epConfig.uaConfig.mainThreadOnly = True
+            #self.epConfig.logConfig.writer = self.logger
+            self.epConfig.logConfig.filename = "/tmp/testVOIP.log"
+            self.epConfig.logConfig.fileFlags = pj.PJ_O_APPEND
+            self.epConfig.logConfig.level = 6
+            self.epConfig.logConfig.consoleLevel = 6
+            uaCfg = pj.UaConfig()
             uaCfg.max_calls = 32 #TODO Should onl be 1 or at least configurable... (at the moment it is a bug in the base lib...)
             #its a "bug" in PJSIP; call.hangup does not remove the call *immediately*, but waits up 32s until the call is removed from call array.
             #Therefore an incoming call might overwrite the already used (but hangup) callslot.
@@ -70,17 +83,27 @@ class SipController(object):
             if self.mediaConfig is None: #MediaConfiguration
                 self.mediaConfig = pjsua.MediaConfig() #TODO Make mediaconfig mandatory and handle this in class
 
-            self.pjLib.init(uaCfg, log_cfg = pj.LogConfig(level=5, callback=PJSIPLoggingCallBack.log), media_cfg=self.mediaConfig)
+            self.epConfig.uaConfig.userAgent = "VoIP.py-" + self.ep.libVersion().full;
+            self.ep.libInit(self.epConfig)
 
+            #TODO
             if self.audioDevice.captureDevId != None and self.audioDevice.playbackDevId != None: #TODO make this via module / callback or whatever.
                 self.pjLib.set_snd_dev(self.audioDevice.captureDevId, self.audioDevice.playbackDevId)
-            self.pjLib.start()
-        except:
-            self.pjLib.destroy()
-            self.pjLib = None
+            #END
+
+
+            self.ep.libStart()
+        except Exception as e:
+            print(e)
+            self.ep = None
             self.logger.error("PJSIP could not be started.")
             sys.exit(-1)
         return
+
+    def _onTimer(self):
+        self.ep.libHandleEvents(10)
+        shoot = QtCore.QTimer()
+        shoot.singleShot(50, self._onTimer)
 
     def registerClient(self):
         """
@@ -88,27 +111,26 @@ class SipController(object):
         """
         if self.accountInfo is not None:
             self.initTransport()
-
             try:
-                lck = self.pjLib.auto_lock()
                 acc_cfg = pj.AccountConfig()
-                acc_cfg.id = self.accountInfo.getSipAddress()
-                acc_cfg.reg_uri = self.accountInfo.getSipRegURI()
-                acc_cfg.video_outgoing_default = self.videoDevice.video_outgoing_default
-                acc_cfg.video_capture_device = self.videoDevice.video_capture_device
-                acc_cfg.video_render_device = self.videoDevice.video_render_device
-                acc_cfg.vid_out_auto_transmit = self.videoDevice.vid_out_auto_transmit
-                acc_cfg.vid_in_auto_show =  self.videoDevice.vid_in_auto_show
-                acc_cfg.auth_cred = [pj.AuthCred("*", str(self.accountInfo.sipName), str(self.accountInfo.sipSecret))] #No better way using bindings?
-                if self.networkSettings != None:
-                    if self.networkSettings.tcp == True:
-                        acc_cfg.proxy.append("<"+ str(self.accountInfo.getSipAddress()) +";lr;transport=tcp>") #Haeh?
-                self.pjAccount = self.pjLib.create_account(acc_cfg)
-                self.pjAccount.set_basic_status(True)
-                self.pjAccountCb  = accountCallB.AccountCallBack(self.onIncommingCall, self.onRegStateChanged, self.pjAccount)
-                self.pjAccount.set_callback(self.pjAccountCb)
-                del lck
-            except pj.Error, e:
+                acc_cfg.idUri = self.accountInfo.getSipAddress()
+                acc_cfg.priority = 0
+                #acc_cfg.video_outgoing_default = self.videoDevice.video_outgoing_default
+                #acc_cfg.video_capture_device = self.videoDevice.video_capture_device
+                #acc_cfg.video_render_device = self.videoDevice.video_render_device
+                #acc_cfg.vid_out_auto_transmit = self.videoDevice.vid_out_auto_transmit
+                #acc_cfg.vid_in_auto_show =  self.videoDevice.vid_in_auto_show
+                cred = pj.AuthCredInfo()
+                cred.scheme = "digest"
+                cred.realm = "*"
+                cred.username = str(self.accountInfo.sipName)
+                cred.data = str(self.accountInfo.sipSecret)
+                acc_cfg.sipConfig.authCreds.append(cred)
+                acc_cfg.regConfig.registrarUri = self.accountInfo.getSipRegURI()
+                self.pjAccount = Account.Account(self.onIncommingCall, self.onRegStateChanged)
+                self.pjAccount.create(acc_cfg, True);
+
+            except pj.Error as e:
                 self.logger.error("Error while registration: ", e)
 
         else:
@@ -121,19 +143,22 @@ class SipController(object):
                 self.addBuddy(buddy.buddyURI,  buddy.changeOnlineStatus)
 
     def addBuddy(self,  buddyURI,  buddyOnStateChange = None):
-        buddy = self.pjAccount.add_buddy(buddyURI,  PresenceCallBack.PresenceCallBack(None, buddyOnStateChange))
-        buddy.subscribe()
+        buddycfg = pj.BuddyConfig()
+        buddycfg.uri = buddyURI
+        self.buddy = Buddy(buddyOnStateChange)
+        self.buddy.create(self.pjAccount, buddycfg)
+        self.buddy.subscribePresence(True)
+        self.pjAccount.addBuddy(self.buddy)
 
     def initTransport(self):
         if self.networkSettings.tcp == True:
-           transportType = pj.TransportType.TCP
+            transportType = pj.PJSIP_TRANSPORT_TCP
         else:
-           transportType = pj.TransportType.UDP
-
+           transportType = pj.PJSIP_TRANSPORT_UDP
+        transportConfig = pj.TransportConfig()
         if self.networkSettings.networkPort is not None:
-           self.transport = self.pjLib.create_transport(transportType, pj.TransportConfig(int(self.networkSettings.networkPort)))
-        else:
-           self.transport = self.pjLib.create_transport(transportType)
+           transportConfig.port = self.networkSettings.networkPort
+        self.ep.transportCreate(transportType, transportConfig)
 
     def callNumber(self, number):
         """
@@ -142,16 +167,16 @@ class SipController(object):
         @param number: The number to call
         """
         self.logger.info("Trying to call sip: " + str(number) + "@" + str(self.accountInfo.sipServerAddress))
-        if self.currentCall == None:
+        if self.currentCall is None or self.currentCall.inactive is True:
             toCall = "sip:" + str(number) + "@" + str(self.accountInfo.sipServerAddress)
             self.logger.info('Calling ' + toCall)
-            self.currentCall = self.pjAccount.make_call(str(toCall), self.pjCallCallBack)
-            self.currentCallCallback = CallCallBack.CallCallBack(self.dumpSettings, self.callClear, self.controllerCallBack,  self.currentCall,  self.pjLib)
-            self.currentCall.set_callback(self.currentCallCallback)
+            self.currentCall = Call(self.pjAccount, pj.PJSUA_INVALID_ID, self.dumpSettings, self.callClear, self.controllerCallBack)
+            prm = pj.CallOpParam(True)
+            self.currentCall.makeCall(str(toCall), prm)
             return self.currentCall
         else:
             self.logger.warning("Only one call is allowed!")
-            raise 
+            raise
 
     def hangup(self):
         """
@@ -159,13 +184,13 @@ class SipController(object):
         It's also save to use if there is no current call.
         """
         self.logger.info("Hangup current call")
-        if self.currentCall != None:
+        if self.currentCall is not None and self.currentCall.inactive is False:
             self.currentCall.userHangup = True
             self.currentCall.hangup(SIP_CODES.SIP_OK)
-            self.currentCall = None
-            self.currentCallCallback = None
+            self.currentCall.inactive = True
         else:
             try:
+                print("TODO NOT IMPLEMENTED IN NEW LIB")
                 self.pjAccountCb.hangup(SIP_CODES.SIP_OK)
             except:
                 pass
@@ -176,7 +201,11 @@ class SipController(object):
         Destroys the SIP library.
         """
         try:
-            self.pjLib.destroy()
+            if (self.currentCall is not None):
+                self.currentCall.hangup()
+            if (self.pjAccount is not None):
+                self.pjAccount.setRegistration(False)
+            self.ep.libDestroy()
         except:
             pass
         self.pjLib = None
@@ -188,36 +217,38 @@ class SipController(object):
         """
         reg = False
         if self.pjAccount != 0:
-            if self.pjAccount.info().reg_status == SIP_CODES.SIP_OK:
+            if self.pjAccount.getInfo().regIsActive == True:
                 reg = True
-            self.controllerCallBack.onRegStateChanged(reg, self.pjAccount.info().reg_status,  self.pjAccount.info().reg_reason)
+            self.controllerCallBack.onRegStateChanged(reg, self.pjAccount.getInfo().regIsActive,  self.pjAccount.getInfo().regStatusText)
+        self._onTimer()
 
     def onIncommingCall(self,  call = None):
         if self.currentCall != None:
             call.hangup(SIP_CODES.SIP_BUSY_HERE) #TODO loggging
         else:
             self.currentCall = call
-            self.logger.info('Incoming call from ' + self.currentCall.info().remote_uri)
-            self.currentCallCallback = CallCallBack.CallCallBack(self.dumpSettings, self.callClear, self.controllerCallBack,  self.currentCall,  self.pjLib)
-            self.currentCall.set_callback(self.currentCallCallback)
+            self.logger.info('Incoming call from ' + self.currentCall.getInfo().remoteUri)
+            self.currentCall.setCallBacks(self.dumpSettings, self.callClear, self.controllerCallBack)
+            self.currentCall.answerWithRinging()
             self.controllerCallBack.connectIncomingCall()
             self.logger.debug("SipController informed about incomming call")
+
 
     def callClear(self):
         self.currentCall = None
         self.currentCallCallback = None
 
-    def setPresenceStatus(self, is_online, activity=0, pres_text="", rpid_id=""):
-        self.pjAccount.set_presence_status(is_online,  activity,  pres_text,  rpid_id)
-
-    def setBasicPresenceStatus(self, is_online):
-        self.pjAccount.set_basic_status(is_online)
+    def setPresenceStatus(self, pj_status, pres_text="Unknown"):
+        status = pj.PresenceStatus()
+        status.statusText = pres_text
+        status.status = pj_status
+        self.pjAccount.setOnlineStatus(status)
 
     def getRegState(self): #TODO Refactor to getRegistrationState
         """
         Provides the registration state of the client.
         @rtype: bool
-        @return: True if the client is registered 
+        @return: True if the client is registered
         """
         try:
             return self.pjAccount.info().reg_active
@@ -247,14 +278,14 @@ class SipController(object):
         """
         Provides the number of the calling party if there currently is a call.
         @rtype: string
-        @return: The number of the calling party or None if there currently is no call 
+        @return: The number of the calling party or None if there currently is no call
         """
         try:
-            return self.currentCall.info().remote_uri
+            return self.currentCall.getInfo().remoteUri
         except:
             return None
 
-    def reinitLibWithNewMedia(self,  mediaConf): #TODO Merge with init? 
+    def reinitLibWithNewMedia(self,  mediaConf): #TODO Merge with init?
         self.mediaConf = mediaConf
         self.freeLib()
         self.initLib()

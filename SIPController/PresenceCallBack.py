@@ -1,6 +1,6 @@
-import pjsua as pj
+import pjsua2 as pj
 
-class PresenceCallBack(pj.BuddyCallback):
+class PresenceCallBack():
     
     def __init__(self, buddy = None,  buddyFunctionPointer = None):
         pj.BuddyCallback.__init__(self, buddy)

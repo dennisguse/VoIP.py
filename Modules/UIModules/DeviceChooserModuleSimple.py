@@ -3,7 +3,8 @@ from PyQt4.QtCore import *
 from PyQt4 import uic
 from ConfigModules import AudioDeviceModule
 import Modules.UIModules.RESOURCES as UIResources
-import pjsua
+import SIPController.Endpoint as ep
+import pjsua2 as pj
 import logging
 
 #TODO Merge with DeviceChooserModule
@@ -16,8 +17,9 @@ class DeviceChooserModuleSimple(QDialog):
     def __init__(self):
         super(DeviceChooserModuleSimple, self).__init__(None)
         self.logger = logging.getLogger("DeviceChooserSimple")
-        self.audioDeviceList = pjsua.Lib.instance().enum_snd_dev()
-        return
+        test = ep.Endpoint.instance
+        self.devManager = ep.Endpoint.instance.audDevManager()
+        self.audioDeviceList = self.devManager.enumDev()
 
     def hasSignalsToRegister(self):
         return False
@@ -37,17 +39,21 @@ class DeviceChooserModuleSimple(QDialog):
         self.dialog = uic.loadUi(UIResources.RESCOURCES_UI["DeviceChooserDialogSimple"], self)
         self.dialog.btn.clicked.connect(self.save)
         for device in self.audioDeviceList:
-            self.logger.debug(device.name + " (Input-Channels:" + str(device.input_channels)  + " // Output-Channels " + str(device.output_channels) + ") Device-ID: " + str(device.device_id))
-            if (device.input_channels > 0) and (device.output_channels > 0):
-                 self.dialog.cmbDeviceInput.addItem(device.name, device.device_id)
+            self.logger.debug(device.name + " (Input-Channels:" + str(device.inputCount)  + " // Output-Channels " + str(device.outputCount) + ") Device-ID: TODO")
+            if (device.inputCount > 0) and (device.outputCount > 0):
+                 self.dialog.cmbDeviceInput.addItem(device.name, "TODO device id") #TDO what is the device id?
 
     def save(self):
-        (deviceId, ok) = self.dialog.cmbDeviceInput.itemData(self.dialog.cmbDeviceInput.currentIndex()).toInt()
+        #(deviceId, ok) = self.dialog.cmbDeviceInput.itemData(self.dialog.cmbDeviceInput.currentIndex()).toInt()
 
+        deviceId = 0
         self.logger.info("User selected: " + str(deviceId))
         #TODO Do sanity check here (is device still there?)
-        pjsua.Lib.instance().set_snd_dev(deviceId, deviceId)
-
+        try:
+            self.devManager.setCaptureDev(deviceId)
+            self.devManager.setPlaybackDev(deviceId)
+        except:
+            pass #TODO make a nice popup that it failed
         self.dialog.done(0)
         return
 

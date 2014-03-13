@@ -1,5 +1,5 @@
 import logging, signal
-
+import pjsua2 as pj
 from Modules.MainUIModules.AbstractUIModule import AbstractUIModule
 from PyQt4.QtCore import *
 from PyQt4 import uic, QtGui
@@ -14,8 +14,11 @@ from ConfigModules import BuddyConfigModule
 
 class SimpleUI(AbstractUIModule,  QtGui.QWidget):
     
+    #MODULES_TO_LOAD = ['ErrorDialog',  'WaveRecordModule',  'RingToneModule', 'SingleBuddyModule',
+    #                   'DeviceChooserModuleSimple', 'SystrayModule']
+
     MODULES_TO_LOAD = ['ErrorDialog',  'WaveRecordModule',  'RingToneModule', 'SingleBuddyModule',
-                       'DeviceChooserModuleSimple', 'SystrayModule']
+                       'DeviceChooserModuleSimple']
     
     def __init__(self, signalSource, parent=None):
         QtGui.QWidget.__init__(self, parent)   
@@ -123,9 +126,9 @@ class SimpleUI(AbstractUIModule,  QtGui.QWidget):
 
     def onManuallyStatusChange(self, status):
         if status == 1:
-            SIGNALS.emit(self, SIGNALS.OWN_ONLINE_STATE_CHANGED, False)
+            SIGNALS.emit(self, SIGNALS.OWN_ONLINE_STATE_CHANGED, pj.PJSUA_BUDDY_STATUS_OFFLINE)
         else:
-            SIGNALS.emit(self, SIGNALS.OWN_ONLINE_STATE_CHANGED, True)
+            SIGNALS.emit(self, SIGNALS.OWN_ONLINE_STATE_CHANGED, pj.PJSUA_BUDDY_STATUS_ONLINE)
 
     def showWindow(self):   
         self.__ui.show()

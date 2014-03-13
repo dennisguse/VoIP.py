@@ -2,8 +2,7 @@ class MetaA(type):
     def __getitem__(cls, param):
         return cls._config.get(param)
 
-class RESCOURCES_UI(object):
-    __metaclass__=MetaA
+class RESCOURCES_UI(object, metaclass=MetaA):
     mainPath="./Modules/UIModules/UIResources/"
     _config = dict( \
     AccountDialog = mainPath + "AccountDialog.ui", \
@@ -19,8 +18,7 @@ class RESCOURCES_UI(object):
     StatisticDialog = mainPath + "StatisticsDialog.ui"
     )
 
-class RESCOURCES_PIC(object):
-    __metaclass__=MetaA
+class RESCOURCES_PIC(object, metaclass=MetaA):
     mainPath="./Modules/UIModules/UIResources/"
     _config = dict( \
     Busy = mainPath + "busy.png",  \

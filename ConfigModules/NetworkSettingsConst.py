@@ -1,3 +1,3 @@
 tcp = None
-networkPort = 6666
+networkPort = 58300
 ipv6 = None

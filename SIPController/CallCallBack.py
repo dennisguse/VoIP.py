@@ -1,4 +1,4 @@
-import pjsua as pj
+import pjsua2 as pj
 import time
 import PyQt4.QtCore
 import logging, traceback
@@ -7,7 +7,7 @@ from SIPController.ControllerCallBacksHolder import ControllerCallBacksHolder
 DIALTONE_PATH = './Resources/dialtone.wav'
 
 
-class CallCallBack(pj.CallCallback):
+class CallCallBack():
 
     def __init__(self, dumpSettings, callClear, controllerCallBack,  call=None,  pjLib=None):
         pj.CallCallback.__init__(self, call)
@@ -97,9 +97,9 @@ class CallCallBack(pj.CallCallback):
                 self.logger.debug("Connected recorder slot:" + str(self.recorderSlotInc))
                 self.logger.debug("Connected recorder slot:" + str(self.recorderSlotOut))
                 self.numberRecorderSlotsConnected = self.numberRecorderSlotsConnected + 1
-            except Exception, e:
+            except Exception as e:
                 self.logger.warning("Recorder not created!")
-                print traceback.format_exc()
+                print (traceback.format_exc())
 
     def disconnectConfSlots(self):
         if self.numberConfSlotsConnected > 0:

@@ -79,15 +79,12 @@ class SignalHandler(QObject):
     def onConnectCallSignal(self):
         self.logger.info("Accept incoming call")
         try:
-            self.sipController.currentCall.answer()
-            self.logger.debug("Accepting call:" + self.sipController.currentCall.info().remote_contact)
-            self.logger.debug("With call id:" + self.sipController.currentCall.info().sip_call_id)
-            self.logger.debug("With state:" + self.sipController.currentCall.info().state_text)
-            self.logger.debug("Valid:" + self.sipController.currentCall.is_valid())
+            self.sipController.currentCall.answerCall()
+            self.logger.debug("Accepting call:" + self.sipController.currentCall.getInfo().remoteUri)
             self.logger.debug("Call excepted by SipController")
-        except:
+        except Exception as e:
             ex = sys.exc_info()[0]
-            self.logger.error("Unable to connect current call")
+            self.logger.error("Unable to connect current call" + e)
 
     def onHangupCallSignal(self):
         self.logger.info("Hangup call")

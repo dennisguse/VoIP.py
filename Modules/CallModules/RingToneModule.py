@@ -1,24 +1,25 @@
 from PyQt4 import QtCore
-import pjsua as pj
+import pjsua2 as pj
 from Modules.AbstractModule import AbstractModule
+from SIPController.Endpoint import Endpoint as ep
 
 class RingToneModule(QtCore.QThread,  AbstractModule):
   
     def __init__(self,  pathToRingTone = './Resources/phone.wav'):
         super(RingToneModule,self).__init__()
         self.ringToneFilePath = pathToRingTone
-        self.lib = pj.Lib.instance()
+
 
     def start(self):
-        self.playLoop = True
-        self.playerID = self.lib.create_player(self.ringToneFilePath, True)
-        self.playerSlot = self.lib.player_get_slot(self.playerID)
-        self.lib.conf_connect(self.playerSlot, 0)
+        self.player = pj.AudioMediaPlayer()
+        self.play_med = ep.instance.audDevManager().getPlaybackDevMedia()
+        self.player.createPlayer(self.ringToneFilePath)
+        self.player.startTransmit(self.play_med)
+
 
     def dismiss(self):
         try:
-            self.lib.conf_disconnect(self.playerSlot, 0)
-            self.lib.player_destroy(self.playerID)
+            self.player.stopTransmit(self.play_med)
         except:
             pass
 
