@@ -213,6 +213,9 @@ class SipController(object):
     def setBasicPresenceStatus(self, is_online):
         self.pjAccount.set_basic_status(is_online)
 
+    def setRegStatus(self, reg):
+        self.pjAccount.set_registration(reg)
+ 
     def getRegState(self): #TODO Refactor to getRegistrationState
         """
         Provides the registration state of the client.

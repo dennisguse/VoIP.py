@@ -102,7 +102,8 @@ class SignalHandler(QObject):
             self.logger.info("Setting own online status to online")
         else:
             self.logger.info("Settting own online status to offline")
-        self.sipController.setPresenceStatus(isOnline)
+        #self.sipController.setBasicPresenceStatus(isOnline)
+        self.sipController.setRegStatus(isOnline)
 
     ####################################
     #     Outgoing signal section      #
@@ -142,6 +143,7 @@ class SignalHandler(QObject):
             self.emit(SIGNAL(SIGNALS.CALL_SIGNAL_LEVEL_CHANGE), self.sipController.currentCallCallback.getCallLevels())
 
     def onCallHasVideo(self):
-        self.logger.debug("Video-stream count: " + str(self.sipController.currentCall.info().vid_cnt)) #TODO CHECK WHY 0
-        self.emit(SIGNAL(SIGNALS.CALL_SHOW_VIDEO), self.sipController.getCurrentCallVideoStream())
-        self.logger.debug("Call has video with win id: " + str(self.sipController.getCurrentCallVideoStream()))
+        #self.logger.debug("Video-stream count: " + str(self.sipController.currentCall.info().vid_cnt)) #TODO CHECK WHY 0
+        #self.emit(SIGNAL(SIGNALS.CALL_SHOW_VIDEO), self.sipController.getCurrentCallVideoStream())
+        #self.logger.debug("Call has video with win id: " + str(self.sipController.getCurrentCallVideoStream()))
+        pass
