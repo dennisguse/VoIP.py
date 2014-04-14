@@ -42,5 +42,5 @@ class MediaConfigModule(object):
     def implementConfiguration(self):
         members  = [attr for attr in dir(self) if not callable(getattr(self,attr)) and not attr.startswith("__") and not attr.startswith("_")]
         for member in members:
-            if getattr(self, member):
+            if getattr(self, member) is not None: #PJSIP cannot cope with None values; some problems with loudness variation.
                 setattr(self.__mediaConfig, member, getattr(self, member))
